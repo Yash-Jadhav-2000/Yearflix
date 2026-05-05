@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YearFlix — Your Year in Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#E50914;--bg:#141414;--bg2:#1a1a1a;--bg3:#222;--bg4:#2a2a2a;
+    --text:#e5e5e5;--text-dim:#777;--white:#fff;
+    --card-w:200px;--card-h:112px;--radius:4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+
+  /* ══ LOADER ══════════════════════════════════════════════════ */
+  #loader{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column}
+  .logo-anim{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,100px);color:var(--red);letter-spacing:4px;animation:logoReveal 1.4s cubic-bezier(.22,1,.36,1) forwards;opacity:0;transform:scaleX(.6);text-shadow:0 0 80px rgba(229,9,20,.6)}
+  @keyframes logoReveal{to{opacity:1;transform:scaleX(1)}}
+  .loader-tag{font-size:13px;color:#555;letter-spacing:6px;text-transform:uppercase;margin-top:12px;opacity:0;animation:fadeUp .6s 1.2s ease forwards}
+  .loader-bar{width:200px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:28px;overflow:hidden;opacity:0;animation:fadeUp .4s 1.4s ease forwards}
+  .loader-bar-fill{height:100%;background:var(--red);width:0;animation:barFill 1.4s 1.5s ease forwards}
+  @keyframes barFill{to{width:100%}}
+  #loader.hide{animation:loaderOut .5s ease forwards;pointer-events:none}
+  @keyframes loaderOut{to{opacity:0}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ══ CONFIG MODAL ════════════════════════════════════════════ */
+  #config-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+  #config-modal.open{display:flex}
+  .config-box{background:var(--bg2);border:1px solid #2e2e2e;border-radius:14px;padding:clamp(24px,4vw,40px);width:100%;max-width:500px}
+  .config-box h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:var(--red);margin-bottom:4px}
+  .config-box .sub{font-size:12px;color:var(--text-dim);margin-bottom:22px;line-height:1.6}
+  .config-box label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;margin:14px 0 5px}
+  .config-box input{width:100%;background:var(--bg3);border:1px solid #333;border-radius:6px;color:var(--white);padding:10px 13px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+  .config-box input:focus{border-color:var(--red)}
+  .config-box input::placeholder{color:#444}
+  .btn-primary{width:100%;margin-top:22px;background:var(--red);border:none;color:#fff;padding:12px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:background .2s,transform .15s}
+  .btn-primary:hover{background:#c50813;transform:scale(1.01)}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .config-note{font-size:11px;color:#444;margin-top:14px;line-height:1.7;text-align:center}
+  .config-note a{color:#666;text-decoration:underline}
+  .config-steps{background:var(--bg3);border-radius:8px;padding:14px 16px;margin-top:16px;font-size:11px;color:#666;line-height:2}
+  .config-steps b{color:#999}
+
+  /* ══ PROFILE SCREEN ══════════════════════════════════════════ */
+  #profile-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:clamp(28px,5vh,52px);opacity:0;transition:opacity .5s ease}
+  #profile-screen.visible{opacity:1}
+  #profile-screen.exit{animation:screenExit .5s ease forwards}
+  @keyframes screenExit{to{opacity:0;transform:scale(1.04)}}
+  .profiles-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,42px);letter-spacing:3px;color:var(--white);text-align:center}
+  .profiles-grid{display:flex;flex-wrap:wrap;gap:clamp(14px,3vw,30px);justify-content:center;padding:0 16px}
+  .profile-card{display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:10px;opacity:0;transform:translateY(18px);animation:cardIn .5s ease forwards;transition:transform .25s ease}
+  .profile-card:nth-child(1){animation-delay:.06s}.profile-card:nth-child(2){animation-delay:.13s}
+  .profile-card:nth-child(3){animation-delay:.20s}.profile-card:nth-child(4){animation-delay:.27s}
+  .profile-card:nth-child(5){animation-delay:.34s}
+  @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+  .profile-card:hover{transform:scale(1.1)}
+  .profile-card:hover .p-avatar{border-color:var(--white);box-shadow:0 0 0 3px var(--white)}
+  .profile-card:hover .p-name{color:var(--white)}
+  .p-avatar{width:clamp(80px,13vw,124px);aspect-ratio:1;border-radius:6px;border:3px solid transparent;overflow:hidden;transition:border-color .2s,box-shadow .2s;background:var(--bg3)}
+  .p-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .p-avatar-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,50px);color:#fff;user-select:none}
+  .p-name{font-size:13px;font-weight:500;color:var(--text-dim);letter-spacing:1px;transition:color .2s}
+  .p-count{font-size:10px;color:#444;margin-top:-6px}
+  .profile-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .outline-btn{background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);padding:9px 22px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .2s,color .2s,background .2s}
+  .outline-btn:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.05)}
+  .outline-btn.red{border-color:rgba(229,9,20,.5);color:var(--red)}
+  .outline-btn.red:hover{border-color:var(--red);color:#ff3030;background:rgba(229,9,20,.07)}
+
+  /* ══ UPLOAD MODAL ════════════════════════════════════════════ */
+  #upload-modal{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+  #upload-modal.open{display:flex}
+  .upload-box{background:var(--bg2);border:1px solid #2e2e2e;border-radius:14px;padding:clamp(20px,4vw,36px);width:100%;max-width:540px;max-height:92vh;overflow-y:auto}
+  .upload-box h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--white);margin-bottom:3px}
+  .upload-box .sub{font-size:11px;color:var(--text-dim);margin-bottom:18px;line-height:1.6}
+  .year-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .year-tab{padding:6px 16px;border-radius:20px;border:1px solid #383838;background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+  .year-tab.active,.year-tab:hover{background:var(--red);border-color:var(--red);color:#fff}
+  .drop-zone{border:2px dashed #383838;border-radius:8px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;margin-bottom:14px}
+  .drop-zone:hover,.drop-zone.drag{border-color:var(--red);background:rgba(229,9,20,.04)}
+  .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .drop-zone .dz-icon{font-size:28px;margin-bottom:6px}
+  .drop-zone p{font-size:12px;color:var(--text-dim)}
+  .drop-zone span{color:var(--red);font-weight:600}
+  .upload-previews{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:7px;margin-bottom:14px}
+  .prev-item{position:relative;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:var(--bg3)}
+  .prev-item img{width:100%;height:100%;object-fit:cover;display:block}
+  .prev-remove{position:absolute;top:3px;right:3px;width:17px;height:17px;border-radius:50%;background:rgba(0,0,0,.85);border:none;color:#fff;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .prev-prog{position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+  .prev-prog-bar{width:68%;height:3px;background:#333;border-radius:2px;overflow:hidden}
+  .prev-prog-fill{height:100%;background:var(--red);width:0%;transition:width .15s}
+  .prev-prog span{font-size:9px;color:#bbb}
+  .prev-done{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .upload-status{font-size:11px;color:var(--text-dim);margin-bottom:12px;min-height:16px;text-align:center}
+  .upload-actions{display:flex;gap:10px}
+  .btn-upload{flex:1;background:var(--red);border:none;color:#fff;padding:11px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s}
+  .btn-upload:hover{background:#c50813}
+  .btn-upload:disabled{opacity:.4;cursor:not-allowed}
+  .btn-cancel{background:transparent;border:1px solid #383838;color:var(--text-dim);padding:11px 18px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .2s}
+  .btn-cancel:hover{border-color:#666;color:#fff}
+
+  /* ══ NAV ══════════════════════════════════════════════════════ */
+  #dashboard{display:none;min-height:100vh;background:var(--bg)}
+  #dashboard.active{display:block}
+  .nav{position:fixed;top:0;left:0;right:0;z-index:500;height:66px;display:flex;align-items:center;padding:0 clamp(16px,4vw,56px);gap:clamp(14px,2.5vw,28px);transition:background .4s}
+  .nav.scrolled{background:rgba(20,20,20,.98)}
+  .nav::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.9) 0%,transparent 100%);pointer-events:none}
+  .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.5vw,34px);color:var(--red);letter-spacing:3px;flex-shrink:0;position:relative}
+  .nav-links{display:flex;gap:clamp(12px,2vw,20px);list-style:none;position:relative}
+  .nav-links a{color:var(--text);font-size:13px;text-decoration:none;transition:color .2s}
+  .nav-links a:hover{color:#fff}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;position:relative}
+  .nav-avatar{width:32px;height:32px;border-radius:4px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;color:#fff;background:var(--bg3);flex-shrink:0;transition:opacity .2s}
+  .nav-avatar img{width:100%;height:100%;object-fit:cover}
+  .nav-avatar:hover{opacity:.8}
+  .nav-icon-btn{background:transparent;border:1px solid rgba(229,9,20,.35);color:var(--red);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;padding:5px 11px;border-radius:2px;font-family:'DM Sans',sans-serif;transition:all .2s}
+  .nav-icon-btn:hover{border-color:var(--red);background:rgba(229,9,20,.08);color:#ff3030}
+  .back-btn{background:transparent;border:none;color:var(--text-dim);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;padding:6px 12px;border-radius:2px;font-family:'DM Sans',sans-serif;transition:color .2s,background .2s}
+  .back-btn:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .nav-search{position:relative;display:flex;align-items:center}
+  .nav-search input{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 12px 6px 27px;border-radius:2px;font-size:12px;width:0;transition:width .3s,opacity .3s;opacity:0;outline:none;font-family:'DM Sans',sans-serif}
+  .nav-search.open input{width:148px;opacity:1}
+  .s-icon{position:absolute;left:0;color:#666;cursor:pointer;font-size:12px;padding:6px;transition:color .2s}
+  .s-icon:hover{color:#ccc}
+  .nav-search.open .s-icon{left:6px}
+
+  /* ══ HERO ════════════════════════════════════════════════════ */
+  .hero{position:relative;height:clamp(400px,62vh,680px);overflow:hidden;display:flex;align-items:flex-end;padding:0 clamp(24px,5vw,80px) clamp(36px,6vh,72px)}
+  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+  .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(20,20,20,.93) 30%,rgba(20,20,20,.08) 100%),linear-gradient(to top,rgba(20,20,20,1) 0%,transparent 55%)}
+  .hero-content{position:relative;z-index:2;max-width:480px}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red);border-radius:2px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,6vw,72px);line-height:.95;letter-spacing:2px;color:#fff;margin-bottom:14px}
+  .hero-desc{font-size:clamp(12px,1.4vw,14px);color:#ccc;line-height:1.65;margin-bottom:22px;max-width:360px}
+  .hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn-play,.btn-info{display:flex;align-items:center;gap:7px;padding:10px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:transform .15s,opacity .15s}
+  .btn-play:hover,.btn-info:hover{transform:scale(1.04);opacity:.9}
+  .btn-play{background:#fff;color:#000}
+  .btn-info{background:rgba(109,109,110,.7);color:#fff}
+
+  /* ══ ROWS ═════════════════════════════════════════════════════ */
+  .rows-section{padding-bottom:60px;margin-top:-36px;position:relative;z-index:2}
+  .row{margin-bottom:clamp(20px,3vh,36px);padding:0 clamp(16px,4vw,56px)}
+  .row-title{font-size:clamp(13px,1.5vw,17px);font-weight:700;color:#e5e5e5;margin-bottom:10px;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+  .row-tag{color:var(--red);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .row-count{font-size:10px;color:#444;margin-left:auto}
+  .row-scroll{display:flex;gap:clamp(6px,1vw,9px);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:6px}
+  .row-scroll::-webkit-scrollbar{display:none}
+
+  /* ══ CARDS ════════════════════════════════════════════════════ */
+  .card{flex:0 0 var(--card-w);height:var(--card-h);border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;scroll-snap-align:start;transition:transform .3s cubic-bezier(.22,1,.36,1),z-index 0s .3s;background:var(--bg3)}
+  .card:hover{transform:scale(1.28);z-index:10;transition:transform .3s cubic-bezier(.22,1,.36,1),z-index 0s 0s}
+  .card:first-child:hover{transform-origin:left center}
+  .card:last-child:hover{transform-origin:right center}
+  .card-bg{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .card-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .3s}
+  .card:hover .card-bg img{filter:brightness(.35)}
+  .card-bg.no-img{background:linear-gradient(135deg,var(--bg3),var(--bg4))}
+  .fallback-icon{font-size:24px;opacity:.2;pointer-events:none;z-index:1}
+  .card-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.78) 0%,transparent 58%);opacity:0;transition:opacity .28s;display:flex;flex-direction:column;justify-content:flex-end;padding:7px;gap:3px;z-index:2}
+  .card:hover .card-overlay{opacity:1}
+  .card-title{font-size:9px;font-weight:700;color:#fff;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card-meta{display:flex;align-items:center;gap:5px;font-size:8px;color:#aaa}
+  .card-match{color:#46d369;font-weight:700}
+  .card-actions{display:flex;gap:4px;margin-bottom:3px;opacity:0;transition:opacity .2s .08s}
+  .card:hover .card-actions{opacity:1}
+  .card-btn{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,background .15s;font-size:9px;color:#fff}
+  .card-btn:hover{border-color:#fff;background:rgba(255,255,255,.18)}
+
+  /* shimmer */
+  .skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* empty row */
+  .empty-row{display:flex;align-items:center;gap:12px;padding:18px 0}
+  .empty-row p{font-size:12px;color:#444}
+  .empty-row button{background:transparent;border:1px solid rgba(229,9,20,.4);color:var(--red);font-size:11px;padding:6px 14px;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:1px;transition:all .2s}
+  .empty-row button:hover{border-color:var(--red);background:rgba(229,9,20,.08)}
+
+  /* ══ TOAST ════════════════════════════════════════════════════ */
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(25,25,25,.97);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 20px;font-size:12px;color:#fff;z-index:9500;opacity:0;pointer-events:none;transition:opacity .28s,transform .28s;white-space:nowrap;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ══ RESPONSIVE ═══════════════════════════════════════════════ */
+  @media(max-width:768px){:root{--card-w:140px;--card-h:79px}.nav-links{display:none}.hero-desc{display:none}}
+  @media(max-width:480px){:root{--card-w:118px;--card-h:66px}.hero-title{font-size:clamp(28px,8vw,46px)}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="logo-anim">YEARFLIX</div>
+  <div class="loader-tag">Your years, reimagined</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- CONFIG MODAL -->
+<div id="config-modal" class="open">
+  <div class="config-box">
+    <h2>🔥 Firebase Setup</h2>
+    <p class="sub">Paste your Firebase project credentials. Saved in <code>localStorage</code> on this device only — never sent anywhere else.</p>
+
+    <label>API Key</label>
+    <input id="fc-apiKey" placeholder="AIzaSy...">
+    <label>Auth Domain</label>
+    <input id="fc-authDomain" placeholder="your-project.firebaseapp.com">
+    <label>Project ID</label>
+    <input id="fc-projectId" placeholder="your-project-id">
+    <label>Storage Bucket</label>
+    <input id="fc-storageBucket" placeholder="your-project.appspot.com">
+    <label>Messaging Sender ID</label>
+    <input id="fc-messagingSenderId" placeholder="123456789">
+    <label>App ID</label>
+    <input id="fc-appId" placeholder="1:123456789:web:abc...">
+
+    <button class="btn-primary" id="btn-save-config" onclick="saveConfig()">Save &amp; Launch YearFlix ▶</button>
+    <p class="config-note">Find credentials in <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a> → Project Settings → Your Apps → Web App → SDK config.</p>
+
+    <div class="config-steps">
+      <b>Firestore rules (Database → Rules):</b><br>
+      <code>allow read, write: if true;</code><br><br>
+      <b>Storage rules (Storage → Rules):</b><br>
+      <code>allow read, write: if true;</code><br><br>
+      <b>Firestore data structure used:</b><br>
+      <code>images / {year} / photos / {docId} → { url, name, uploadedAt }</code>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div id="upload-modal">
+  <div class="upload-box">
+    <h2>📤 Upload Images</h2>
+    <p class="sub">Pick a year, select your images, and hit Upload. Files go to Firebase Storage and URLs are saved in Firestore — no <code>listAll()</code> needed (Spark-plan safe ✅).</p>
+    <div class="year-tabs" id="upload-year-tabs"></div>
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" multiple accept="image/*">
+      <div class="dz-icon">🖼️</div>
+      <p>Drop images here or <span>click to browse</span></p>
+    </div>
+    <div class="upload-previews" id="upload-previews"></div>
+    <div class="upload-status" id="upload-status"></div>
+    <div class="upload-actions">
+      <button class="btn-upload" id="btn-upload-go" onclick="startUpload()" disabled>⬆ Upload to Firebase</button>
+      <button class="btn-cancel" onclick="closeUploadModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE SCREEN -->
+<div id="profile-screen">
+  <h1 class="profiles-title">Who's watching?</h1>
+  <div class="profiles-grid" id="profiles-grid"></div>
+  <div class="profile-actions">
+    <button class="outline-btn red" onclick="openUploadModal()">⬆ Upload Images</button>
+    <button class="outline-btn" onclick="clearConfig()">⚙ Change Firebase Config</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <nav class="nav" id="main-nav">
+    <div class="nav-logo">YEARFLIX</div>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Moments</a></li>
+      <li><a href="#">Highlights</a></li>
+      <li><a href="#">New &amp; Popular</a></li>
+      <li><a href="#">My List</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search" id="nav-search">
+        <span class="s-icon" onclick="document.getElementById('nav-search').classList.toggle('open')">🔍</span>
+        <input type="text" placeholder="Search...">
+      </div>
+      <button class="nav-icon-btn" onclick="openUploadModal()">⬆ Upload</button>
+      <div class="nav-avatar" id="nav-avatar"></div>
+      <button class="back-btn" onclick="goBack()">← Profiles</button>
+    </div>
+  </nav>
+  <div class="hero" id="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">✦ <span id="hero-badge"></span></div>
+      <h1 class="hero-title" id="hero-title"></h1>
+      <p class="hero-desc" id="hero-desc"></p>
+      <div class="hero-btns">
+        <button class="btn-play" onclick="showToast('▶ Playing...')">▶ Play</button>
+        <button class="btn-info" onclick="showToast('ℹ More info coming soon')">ⓘ More Info</button>
+      </div>
+    </div>
+  </div>
+  <div class="rows-section" id="rows-section"></div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+
+<!-- FIREBASE SDK (ESM) -->
+<script type="module">
+import { initializeApp, getApps }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ─── CONSTANTS ───────────────────────────────────────────────
+const YEARS      = ['2021','2022','2023','2024','2025'];
+const YEAR_ICONS = ['🌙','💫','⚡','🔥','🚀'];
+const HUES = [
+  {bg:['#3d0000','#6b0000']},{bg:['#00003d','#000066']},{bg:['#003d00','#006600']},
+  {bg:['#3d2000','#663300']},{bg:['#1a003d','#2d006b']},
+];
+const GRADS = [
+  ['#1a0505','#3d0000'],['#050a1a','#00003d'],['#051a05','#003d00'],
+  ['#1a0f00','#3d2000'],['#0f0018','#1a003d'],['#001a18','#003d38'],
+  ['#1a0018','#3d0030'],['#0a1a00','#153d00'],['#001018','#00283d'],['#18100a','#3d2200'],
+];
+const ROWS_DEF = [
+  {label:'All Memories',        tag:'ALL'     },
+  {label:'Trending This Year',  tag:'HOT'     },
+  {label:'Top Picks for You',   tag:''        },
+  {label:'Critically Acclaimed',tag:'NEW'     },
+  {label:'Best of the Year',    tag:'ORIGINAL'},
+];
+const HERO_DATA = {
+  '2021':{title:'PHANTOM GRID',      desc:'In a world rebuilt from isolation, a lone operative navigates a fractured digital underground where every choice echoes across seven realities.',   badge:'YEARFLIX ORIGINAL' },
+  '2022':{title:'REBOUND THEORY',    desc:'The world snaps back — but nothing is the same. Two scientists race against an invisible collapse that rewrites human memory in real time.',       badge:'TOP PICK 2022'     },
+  '2023':{title:'THE MIND FORGE',    desc:'AI awakens not with a bang, but a whisper. A single engineer must decide whether to pull the plug on the greatest creation in history.',         badge:'AI THRILLER'       },
+  '2024':{title:'QUANTUM STATE',     desc:'She exists in two timelines simultaneously. Both versions are hunting the same killer. Only one can survive the convergence.',                   badge:'YEARFLIX EXCLUSIVE'},
+  '2025':{title:'ZERO HOUR PROTOCOL',desc:"Humanity has 72 hours before first contact. The message isn't a greeting — it's an invoice. What was promised? Nobody remembers agreeing.",     badge:'MOST WATCHED 2025' },
+};
+const MATCH  = ['96%','92%','88%','97%','84%','93%','79%','95%','87%','91%'];
+const GENRES = ['Action','Sci-Fi','Thriller','Drama','Mystery','Crime','Noir','Cyber','Fantasy','Horror'];
+const YLABELS= ['2020','2021','2022','2023','2024','2025'];
+
+// ─── STATE ───────────────────────────────────────────────────
+let fbApp=null, fbStorage=null, fbDb=null;
+const urlCache = {};        // year → [url, ...]
+let uploadYear = '2021';
+let pendingFiles = [];      // File | null
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function makeBg(g){ return `linear-gradient(135deg,${g[0]} 0%,${g[1]} 100%)`; }
+function shuffled(a){ return [...a].sort(()=>Math.random()-.5); }
+
+let _tt;
+window.showToast = function(msg){
+  const t=document.getElementById('toast-el');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2600);
+};
+
+// ─── FIREBASE INIT ───────────────────────────────────────────
+function initFB(cfg){
+  try{
+    // Avoid duplicate app error on hot-reloads
+    const existing = getApps().find(a=>a.name===cfg.projectId);
+    fbApp     = existing || initializeApp(cfg, cfg.projectId);
+    fbStorage = getStorage(fbApp);
+    fbDb      = getFirestore(fbApp);
+    return true;
+  }catch(e){ console.error('Firebase init error:',e); return false; }
+}
+
+// ─── CONFIG MODAL ────────────────────────────────────────────
+window.saveConfig = async function(){
+  const cfg = {
+    apiKey:            document.getElementById('fc-apiKey').value.trim(),
+    authDomain:        document.getElementById('fc-authDomain').value.trim(),
+    projectId:         document.getElementById('fc-projectId').value.trim(),
+    storageBucket:     document.getElementById('fc-storageBucket').value.trim(),
+    messagingSenderId: document.getElementById('fc-messagingSenderId').value.trim(),
+    appId:             document.getElementById('fc-appId').value.trim(),
+  };
+  if(!cfg.apiKey||!cfg.projectId||!cfg.storageBucket){
+    showToast('⚠ API Key, Project ID and Storage Bucket are required.');
+    return;
+  }
+  const btn=document.getElementById('btn-save-config');
+  btn.disabled=true; btn.textContent='Connecting…';
+  if(initFB(cfg)){
+    localStorage.setItem('yf_cfg', JSON.stringify(cfg));
+    document.getElementById('config-modal').classList.remove('open');
+    await launchApp();
+  } else {
+    showToast('❌ Could not connect — double-check your credentials.');
+    btn.disabled=false; btn.textContent='Save & Launch YearFlix ▶';
+  }
+};
+
+window.clearConfig = function(){
+  localStorage.removeItem('yf_cfg');
+  location.reload();
+};
+
+// ─── FIRESTORE: fetch URLs for a year ────────────────────────
+// Path: images/{year}/photos  (each doc has { url, name, uploadedAt })
+async function fetchUrls(year){
+  if(urlCache[year]) return urlCache[year];
+  try{
+    const col = collection(fbDb, 'images', year, 'photos');
+    const q   = query(col, orderBy('uploadedAt','desc'));
+    const snap= await getDocs(q);
+    const urls= snap.docs.map(d=>d.data().url).filter(Boolean);
+    urlCache[year] = urls;
+    return urls;
+  }catch(e){
+    console.warn(`[YearFlix] Firestore read failed for ${year}:`, e.message);
+    urlCache[year] = [];
+    return [];
+  }
+}
+
+// Save a new URL to Firestore after upload
+async function saveUrl(year, url, name){
+  try{
+    await addDoc(collection(fbDb,'images',year,'photos'), {
+      url, name, uploadedAt: serverTimestamp(),
+    });
+    // Invalidate cache so next fetch is fresh
+    delete urlCache[year];
+  }catch(e){
+    console.warn('[YearFlix] Firestore write failed:', e.message);
+  }
+}
+
+// ─── PROFILES ────────────────────────────────────────────────
+async function buildProfiles(){
+  const grid = document.getElementById('profiles-grid');
+  grid.innerHTML='';
+  for(let i=0;i<YEARS.length;i++){
+    const year=YEARS[i], hue=HUES[i];
+    const urls = await fetchUrls(year);
+    const picUrl = urls.length ? rand(urls) : null;
+    const card = document.createElement('div');
+    card.className='profile-card';
+    const inner = picUrl
+      ? `<img src="${picUrl}" alt="${year}" loading="lazy"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'p-avatar-inner',textContent:'${YEAR_ICONS[i]}'}));">`
+      : `<div class="p-avatar-inner">${YEAR_ICONS[i]}</div>`;
+    card.innerHTML=`
+      <div class="p-avatar" style="background:${makeBg(hue.bg)}">${inner}</div>
+      <div class="p-name">${year}</div>
+      <div class="p-count">${urls.length ? urls.length+' photo'+(urls.length>1?'s':'') : 'No photos yet'}</div>`;
+    card.addEventListener('click',()=>openDashboard(year,i));
+    grid.appendChild(card);
+  }
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────
+async function openDashboard(year, idx){
+  const ps=document.getElementById('profile-screen');
+  ps.classList.add('exit');
+  setTimeout(async()=>{
+    ps.style.display='none';
+    const d=document.getElementById('dashboard');
+    d.classList.add('active'); d.style.opacity='0'; d.style.transition='opacity .5s ease';
+    await buildDashboard(year,idx);
+    requestAnimationFrame(()=>{ d.style.opacity='1'; });
+  },480);
+}
+
+window.goBack = function(){
+  const d=document.getElementById('dashboard');
+  d.style.opacity='0';
+  setTimeout(()=>{
+    d.classList.remove('active'); d.style.opacity='';
+    window.scrollTo(0,0);
+    const ps=document.getElementById('profile-screen');
+    ps.style.display='flex'; ps.classList.remove('exit');
+    requestAnimationFrame(()=>{ ps.classList.add('visible'); });
+    buildProfiles();
+  },420);
+};
+
+async function buildDashboard(year, idx){
+  const hue  = HUES[idx];
+  const hero = HERO_DATA[year];
+  const urls = await fetchUrls(year);
+
+  // ── Nav avatar ──
+  const av=document.getElementById('nav-avatar');
+  av.innerHTML='';
+  if(urls.length){
+    const img=document.createElement('img');
+    img.src=rand(urls); img.alt=year;
+    img.onerror=()=>{ av.style.background=makeBg(hue.bg); av.textContent=YEAR_ICONS[idx]; };
+    av.appendChild(img);
+  } else {
+    av.style.background=makeBg(hue.bg); av.textContent=YEAR_ICONS[idx];
+  }
+
+  // ── Hero banner ──
+  const heroBg=document.getElementById('hero-bg');
+  const fallback=`radial-gradient(ellipse at 20% 50%,${hue.bg[1]}cc 0%,transparent 60%),${makeBg(GRADS[idx%GRADS.length])}`;
+  heroBg.style.cssText=`background:${fallback}`;
+  if(urls.length){
+    const hUrl=rand(urls);
+    const tmp=new Image();
+    tmp.onload=()=>{ heroBg.style.cssText=`background:url('${hUrl}') center/cover no-repeat`; };
+    tmp.src=hUrl;
+  }
+  document.getElementById('hero-badge').textContent = hero.badge;
+  document.getElementById('hero-title').textContent  = hero.title;
+  document.getElementById('hero-desc').textContent   = hero.desc;
+
+  // ── Rows ──
+  const section=document.getElementById('rows-section');
+  section.innerHTML='';
+
+  // Build a large shuffled pool so every row gets variety
+  const TOTAL=ROWS_DEF.length*15;
+  let pool=[];
+  if(urls.length){ const sh=shuffled(urls); while(pool.length<TOTAL) pool=pool.concat(sh); }
+
+  ROWS_DEF.forEach((rd,ri)=>{
+    const rowEl=document.createElement('div');
+    rowEl.className='row';
+    const tag=rd.tag?`<span class="row-tag">${rd.tag}</span>`:'';
+    const countLabel=urls.length
+      ? `${urls.length} photo${urls.length>1?'s':''}`
+      : 'No photos';
+    rowEl.innerHTML=`
+      <div class="row-title">${rd.label}${tag}
+        <span class="row-count">${countLabel}</span>
+      </div>
+      <div class="row-scroll" id="rs-${ri}"></div>`;
+    section.appendChild(rowEl);
+    const scroll=rowEl.querySelector(`#rs-${ri}`);
+
+    if(!urls.length){
+      scroll.innerHTML=`<div class="empty-row">
+        <p>No photos yet for ${year}.</p>
+        <button onclick="openUploadModal()">⬆ Upload Now</button>
+      </div>`;
+      return;
+    }
+
+    const count=randInt(Math.min(urls.length,6), Math.min(urls.length*2,15));
+    for(let c=0;c<count;c++){
+      const slotUrl = pool[(ri*15+c) % pool.length];
+      const g = GRADS[(ri+c)%GRADS.length];
+      const card=document.createElement('div');
+      card.className='card skeleton';
+      card.innerHTML=`
+        <div class="card-bg">
+          <img src="${slotUrl}" alt="" loading="lazy">
+        </div>
+        <div class="card-overlay">
+          <div class="card-actions">
+            <div class="card-btn" onclick="event.stopPropagation();showToast('▶ Playing')">▶</div>
+            <div class="card-btn" onclick="event.stopPropagation();showToast('✚ Added to My List')">+</div>
+            <div class="card-btn" onclick="event.stopPropagation();showToast('👍 Liked!')">👍</div>
+          </div>
+          <div class="card-title">${year} · ${GENRES[(ri+c)%GENRES.length]} ${ri+1}.${c+1}</div>
+          <div class="card-meta">
+            <span class="card-match">${MATCH[(ri+c)%MATCH.length]}</span>
+            <span>${YLABELS[(ri+c)%YLABELS.length]}</span>
+            <span>${GENRES[(ri+c)%GENRES.length]}</span>
+          </div>
+        </div>`;
+      const img=card.querySelector('img');
+      const done=()=>card.classList.remove('skeleton');
+      img.addEventListener('load',done);
+      img.addEventListener('error',()=>{
+        done();
+        const bg=card.querySelector('.card-bg');
+        bg.classList.add('no-img'); bg.style.background=makeBg(g);
+        img.remove();
+        bg.innerHTML=`<span class="fallback-icon">${YEAR_ICONS[ri%5]}</span>`;
+      });
+      card.addEventListener('click',()=>showToast(`▶ Now playing: ${year} · ${GENRES[(ri+c)%GENRES.length]}`));
+      scroll.appendChild(card);
+    }
+  });
+
+  // sticky nav
+  const nav=document.getElementById('main-nav');
+  window.removeEventListener('scroll',window.__NS);
+  window.__NS=()=>nav.classList.toggle('scrolled',window.scrollY>60);
+  window.addEventListener('scroll',window.__NS,{passive:true});
+}
+
+// ─── UPLOAD MODAL ────────────────────────────────────────────
+function buildUploadTabs(){
+  const tabs=document.getElementById('upload-year-tabs');
+  tabs.innerHTML='';
+  YEARS.forEach(y=>{
+    const btn=document.createElement('button');
+    btn.className='year-tab'+(y===uploadYear?' active':'');
+    btn.textContent=y;
+    btn.onclick=()=>{
+      uploadYear=y;
+      tabs.querySelectorAll('.year-tab').forEach(t=>t.classList.remove('active'));
+      btn.classList.add('active');
+    };
+    tabs.appendChild(btn);
+  });
+}
+
+window.openUploadModal = function(){
+  pendingFiles=[];
+  document.getElementById('upload-previews').innerHTML='';
+  document.getElementById('upload-status').textContent='';
+  document.getElementById('btn-upload-go').disabled=true;
+  buildUploadTabs();
+  document.getElementById('upload-modal').classList.add('open');
+};
+window.closeUploadModal = function(){
+  document.getElementById('upload-modal').classList.remove('open');
+};
+
+// drag & drop
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('drag'); addFiles(e.dataTransfer.files); });
+document.getElementById('file-input').addEventListener('change',e=>{ addFiles(e.target.files); e.target.value=''; });
+
+function addFiles(fileList){
+  [...fileList].forEach(f=>{
+    if(!f.type.startsWith('image/')) return;
+    const idx=pendingFiles.length;
+    pendingFiles.push(f);
+
+    const item=document.createElement('div');
+    item.className='prev-item';
+    item.id=`pi-${idx}`;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      item.innerHTML=`<img src="${e.target.result}">
+        <button class="prev-remove" onclick="removePrev(${idx},this.parentNode)">✕</button>`;
+    };
+    reader.readAsDataURL(f);
+    document.getElementById('upload-previews').appendChild(item);
+  });
+  document.getElementById('btn-upload-go').disabled = pendingFiles.filter(Boolean).length===0;
+}
+
+window.removePrev = function(idx, el){
+  pendingFiles[idx]=null;
+  el.remove();
+  document.getElementById('btn-upload-go').disabled = pendingFiles.filter(Boolean).length===0;
+};
+
+window.startUpload = async function(){
+  const files=pendingFiles.filter(Boolean);
+  if(!files.length || !fbStorage || !fbDb){
+    showToast('⚠ No files selected or Firebase not ready.');
+    return;
+  }
+  document.getElementById('btn-upload-go').disabled=true;
+  const statusEl=document.getElementById('upload-status');
+  statusEl.textContent=`Uploading 0 / ${files.length}…`;
+
+  let done=0;
+  const previews=[...document.getElementById('upload-previews').children];
+
+  await Promise.all(files.map((file, i)=>{
+    return new Promise(resolve=>{
+      const path=`yearflix/${uploadYear}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const storageRef = sRef(fbStorage, path);
+      const task = uploadBytesResumable(storageRef, file);
+
+      // Add progress UI to preview item
+      const item=previews[i];
+      if(item){
+        const prog=document.createElement('div');
+        prog.className='prev-prog';
+        prog.innerHTML=`<div class="prev-prog-bar"><div class="prev-prog-fill" id="ppf-${i}"></div></div><span id="ppt-${i}">0%</span>`;
+        item.appendChild(prog);
+      }
+
+      task.on('state_changed',
+        snap=>{
+          const pct=Math.round((snap.bytesTransferred/snap.totalBytes)*100);
+          const pf=document.getElementById(`ppf-${i}`);
+          const pt=document.getElementById(`ppt-${i}`);
+          if(pf) pf.style.width=pct+'%';
+          if(pt) pt.textContent=pct+'%';
+        },
+        err=>{
+          console.error('Upload error:',err);
+          showToast(`❌ Failed: ${file.name}`);
+          resolve();
+        },
+        async()=>{
+          // Get download URL from Storage
+          const url=await getDownloadURL(task.snapshot.ref);
+          // Save URL + metadata to Firestore (no listAll needed ever again)
+          await saveUrl(uploadYear, url, file.name);
+          done++;
+          statusEl.textContent=`Uploading ${done} / ${files.length}…`;
+          const item2=previews[i];
+          if(item2){
+            const prog=item2.querySelector('.prev-prog');
+            if(prog) prog.innerHTML=`<span style="font-size:20px">✅</span>`;
+          }
+          resolve();
+        }
+      );
+    });
+  }));
+
+  statusEl.textContent=`✅ ${done} image${done>1?'s':''} uploaded to ${uploadYear}!`;
+  showToast(`✅ ${done} image${done>1?'s':''} uploaded to ${uploadYear}`);
+  pendingFiles=[];
+
+  setTimeout(async()=>{
+    closeUploadModal();
+    // Refresh profile screen or dashboard with new images
+    const dashActive=document.getElementById('dashboard').classList.contains('active');
+    if(dashActive){
+      // Re-fetch and rebuild if currently viewing a year
+    } else {
+      await buildProfiles();
+    }
+  },1500);
+};
+
+// ─── LAUNCH ──────────────────────────────────────────────────
+async function launchApp(){
+  // Pre-fetch all years in parallel (Firestore, not listAll)
+  await Promise.all(YEARS.map(y=>fetchUrls(y)));
+
+  setTimeout(()=>{
+    const loader=document.getElementById('loader');
+    loader.classList.add('hide');
+    setTimeout(()=>{
+      loader.style.display='none';
+      const ps=document.getElementById('profile-screen');
+      ps.style.display='flex';
+      requestAnimationFrame(()=>{ ps.classList.add('visible'); });
+      buildProfiles();
+    },600);
+  },2600);
+}
+
+// ─── BOOT ────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('yf_cfg');
+  if(saved){
+    try{
+      const cfg=JSON.parse(saved);
+      // Prefill form fields too (in case user wants to change)
+      Object.keys(cfg).forEach(k=>{
+        const el=document.getElementById('fc-'+k);
+        if(el) el.value=cfg[k];
+      });
+      if(initFB(cfg)){
+        document.getElementById('config-modal').classList.remove('open');
+        launchApp();
+        return;
+      }
+    }catch(e){ console.warn('Saved config invalid, showing form'); }
+  }
+  // Show config form — let loader finish first
+  setTimeout(()=>{
+    document.getElementById('loader').classList.add('hide');
+    setTimeout(()=>document.getElementById('loader').style.display='none',600);
+  },2600);
+});
+</script>
+</body>
+</html>
