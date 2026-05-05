@@ -6,151 +6,200 @@
 <title>YearFlix — Your Year in Review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <style>
-  :root{
-    --red:#E50914;--bg:#141414;--bg2:#1a1a1a;--bg3:#222;--bg4:#2a2a2a;
-    --text:#e5e5e5;--text-dim:#777;--white:#fff;
-    --card-w:200px;--card-h:112px;--r:4px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+:root{
+  --red:#E50914;--bg:#141414;--bg2:#1a1a1a;--bg3:#222;--bg4:#2a2a2a;
+  --text:#e5e5e5;--text-dim:#777;--white:#fff;
+  --card-w:200px;--card-h:112px;--r:4px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
 
-  /* ── LOADER ──────────────────────────────────────────────── */
-  #loader{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .5s ease}
-  #loader.hide{opacity:0;pointer-events:none}
-  .logo-anim{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,104px);color:var(--red);letter-spacing:4px;animation:logoReveal 1.4s cubic-bezier(.22,1,.36,1) forwards;opacity:0;transform:scaleX(.6);text-shadow:0 0 80px rgba(229,9,20,.55)}
-  @keyframes logoReveal{to{opacity:1;transform:scaleX(1)}}
-  .loader-tag{font-size:13px;color:#555;letter-spacing:6px;text-transform:uppercase;margin-top:12px;opacity:0;animation:fadeUp .6s 1.2s ease forwards}
-  .loader-bar{width:200px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:28px;overflow:hidden;opacity:0;animation:fadeUp .4s 1.4s ease forwards}
-  .loader-bar-fill{height:100%;background:var(--red);width:0;animation:barFill 1.4s 1.5s ease forwards}
-  @keyframes barFill{to{width:100%}}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* ── LOADER ─────────────────────────────────────────────────── */
+#loader{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .5s ease}
+#loader.hide{opacity:0;pointer-events:none}
+.logo-anim{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,104px);color:var(--red);letter-spacing:4px;animation:logoReveal 1.4s cubic-bezier(.22,1,.36,1) forwards;opacity:0;transform:scaleX(.6);text-shadow:0 0 80px rgba(229,9,20,.55)}
+@keyframes logoReveal{to{opacity:1;transform:scaleX(1)}}
+.loader-tag{font-size:13px;color:#555;letter-spacing:6px;text-transform:uppercase;margin-top:12px;opacity:0;animation:fadeUp .6s 1.2s ease forwards}
+.loader-bar{width:200px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:28px;overflow:hidden;opacity:0;animation:fadeUp .4s 1.4s ease forwards}
+.loader-bar-fill{height:100%;background:var(--red);width:0;animation:barFill 1.4s 1.5s ease forwards}
+@keyframes barFill{to{width:100%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-  /* ── SIGN-IN SCREEN ──────────────────────────────────────── */
-  #signin-screen{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:28px;opacity:0;transition:opacity .4s ease}
-  #signin-screen.visible{opacity:1}
-  .signin-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,80px);color:var(--red);letter-spacing:4px;text-shadow:0 0 60px rgba(229,9,20,.35)}
-  .signin-sub{font-size:14px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
-  .signin-card{background:var(--bg2);border:1px solid #2a2a2a;border-radius:14px;padding:36px 40px;display:flex;flex-direction:column;align-items:center;gap:20px;max-width:360px;width:90%}
-  .signin-card h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white);text-align:center}
-  .signin-card p{font-size:12px;color:var(--text-dim);text-align:center;line-height:1.7}
-  .btn-google{display:flex;align-items:center;gap:10px;background:#fff;color:#3c4043;border:none;border-radius:6px;padding:11px 22px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:box-shadow .2s,transform .15s;width:100%;justify-content:center}
-  .btn-google:hover{box-shadow:0 2px 12px rgba(0,0,0,.3);transform:scale(1.01)}
-  .btn-google svg{flex-shrink:0}
-  .signin-note{font-size:10px;color:#444;text-align:center;line-height:1.6;max-width:280px}
+/* ── SIGN-IN ─────────────────────────────────────────────────── */
+#signin-screen{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:28px;opacity:0;transition:opacity .4s ease}
+#signin-screen.visible{opacity:1}
+.signin-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,80px);color:var(--red);letter-spacing:4px;text-shadow:0 0 60px rgba(229,9,20,.35)}
+.signin-sub{font-size:14px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
+.signin-card{background:var(--bg2);border:1px solid #2a2a2a;border-radius:14px;padding:36px 40px;display:flex;flex-direction:column;align-items:center;gap:20px;max-width:360px;width:90%}
+.signin-card h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white);text-align:center}
+.signin-card p{font-size:12px;color:var(--text-dim);text-align:center;line-height:1.7}
+.btn-google{display:flex;align-items:center;gap:10px;background:#fff;color:#3c4043;border:none;border-radius:6px;padding:11px 22px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:box-shadow .2s,transform .15s;width:100%;justify-content:center}
+.btn-google:hover{box-shadow:0 2px 12px rgba(0,0,0,.3);transform:scale(1.01)}
+.signin-note{font-size:10px;color:#444;text-align:center;line-height:1.6;max-width:280px}
 
-  /* ── PROFILE SCREEN ──────────────────────────────────────── */
-  #profile-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:clamp(28px,5vh,52px);opacity:0;transition:opacity .4s ease}
-  #profile-screen.visible{opacity:1}
-  #profile-screen.exit{animation:screenExit .45s ease forwards}
-  @keyframes screenExit{to{opacity:0;transform:scale(1.04)}}
-  .profiles-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,42px);letter-spacing:3px;color:var(--white);text-align:center}
-  .profiles-grid{display:flex;flex-wrap:wrap;gap:clamp(14px,3vw,30px);justify-content:center;padding:0 16px}
-  .profile-card{display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:10px;opacity:0;transform:translateY(18px);animation:cardIn .45s ease forwards;transition:transform .25s ease}
-  .profile-card:nth-child(1){animation-delay:.06s}.profile-card:nth-child(2){animation-delay:.13s}
-  .profile-card:nth-child(3){animation-delay:.20s}.profile-card:nth-child(4){animation-delay:.27s}
-  .profile-card:nth-child(5){animation-delay:.34s}
-  @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
-  .profile-card:hover{transform:scale(1.1)}
-  .profile-card:hover .p-avatar{border-color:var(--white);box-shadow:0 0 0 3px var(--white)}
-  .profile-card:hover .p-name{color:var(--white)}
-  .p-avatar{width:clamp(80px,13vw,124px);aspect-ratio:1;border-radius:6px;border:3px solid transparent;overflow:hidden;transition:border-color .2s,box-shadow .2s;background:var(--bg3)}
-  .p-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-  .p-avatar-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,50px);color:#fff;user-select:none}
-  .p-name{font-size:13px;font-weight:500;color:var(--text-dim);letter-spacing:1px;transition:color .2s}
-  .p-count{font-size:10px;color:#444;margin-top:-4px}
-  .profile-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
-  .outline-btn{background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);padding:9px 22px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s}
-  .outline-btn:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.05)}
-  .outline-btn.red{border-color:rgba(229,9,20,.5);color:var(--red)}
-  .outline-btn.red:hover{border-color:var(--red);color:#ff3030;background:rgba(229,9,20,.07)}
-  /* signed-in user badge */
-  .user-badge{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid #2a2a2a;border-radius:20px;padding:6px 14px 6px 6px}
-  .user-badge img{width:24px;height:24px;border-radius:50%;object-fit:cover}
-  .user-badge span{font-size:12px;color:var(--text-dim)}
+/* ── PROFILE SCREEN ─────────────────────────────────────────── */
+#profile-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:clamp(28px,5vh,52px);opacity:0;transition:opacity .4s ease}
+#profile-screen.visible{opacity:1}
+#profile-screen.exit{animation:screenExit .45s ease forwards}
+@keyframes screenExit{to{opacity:0;transform:scale(1.04)}}
+.profiles-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,42px);letter-spacing:3px;color:var(--white);text-align:center}
+.profiles-grid{display:flex;flex-wrap:wrap;gap:clamp(14px,3vw,30px);justify-content:center;padding:0 16px}
+.profile-card{display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:10px;opacity:0;transform:translateY(18px);animation:cardIn .45s ease forwards;transition:transform .25s ease}
+.profile-card:nth-child(1){animation-delay:.06s}.profile-card:nth-child(2){animation-delay:.13s}
+.profile-card:nth-child(3){animation-delay:.20s}.profile-card:nth-child(4){animation-delay:.27s}
+.profile-card:nth-child(5){animation-delay:.34s}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.profile-card:hover{transform:scale(1.1)}
+.profile-card:hover .p-avatar{border-color:var(--white);box-shadow:0 0 0 3px var(--white)}
+.profile-card:hover .p-name{color:var(--white)}
+.p-avatar{width:clamp(80px,13vw,124px);aspect-ratio:1;border-radius:6px;border:3px solid transparent;overflow:hidden;transition:border-color .2s,box-shadow .2s;background:var(--bg3)}
+.p-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.p-avatar-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,50px);color:#fff;user-select:none}
+.p-name{font-size:13px;font-weight:500;color:var(--text-dim);letter-spacing:1px;transition:color .2s}
+.p-count{font-size:10px;color:#444;margin-top:-4px}
+.profile-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+.outline-btn{background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);padding:9px 22px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s}
+.outline-btn:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.05)}
+.outline-btn.red{border-color:rgba(229,9,20,.5);color:var(--red)}
+.outline-btn.red:hover{border-color:var(--red);color:#ff3030;background:rgba(229,9,20,.07)}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid #2a2a2a;border-radius:20px;padding:6px 14px 6px 6px}
+.user-badge img{width:24px;height:24px;border-radius:50%;object-fit:cover}
+.user-badge span{font-size:12px;color:var(--text-dim)}
 
-  /* ── NAV ──────────────────────────────────────────────────── */
-  #dashboard{display:none;min-height:100vh;background:var(--bg)}
-  #dashboard.active{display:block}
-  .nav{position:fixed;top:0;left:0;right:0;z-index:500;height:66px;display:flex;align-items:center;padding:0 clamp(16px,4vw,56px);gap:clamp(14px,2.5vw,28px);transition:background .4s}
-  .nav.scrolled{background:rgba(20,20,20,.98)}
-  .nav::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.9) 0%,transparent 100%);pointer-events:none}
-  .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.5vw,34px);color:var(--red);letter-spacing:3px;flex-shrink:0;position:relative}
-  .nav-links{display:flex;gap:clamp(12px,2vw,20px);list-style:none;position:relative}
-  .nav-links a{color:var(--text);font-size:13px;text-decoration:none;transition:color .2s}
-  .nav-links a:hover{color:#fff}
-  .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;position:relative}
-  .nav-avatar{width:32px;height:32px;border-radius:4px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;color:#fff;background:var(--bg3);flex-shrink:0;transition:opacity .2s}
-  .nav-avatar img{width:100%;height:100%;object-fit:cover}
-  .nav-avatar:hover{opacity:.8}
-  .back-btn{background:transparent;border:none;color:var(--text-dim);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;padding:6px 12px;border-radius:2px;font-family:'DM Sans',sans-serif;transition:color .2s,background .2s}
-  .back-btn:hover{color:#fff;background:rgba(255,255,255,.07)}
-  .nav-search{position:relative;display:flex;align-items:center}
-  .nav-search input{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 12px 6px 27px;border-radius:2px;font-size:12px;width:0;transition:width .3s,opacity .3s;opacity:0;outline:none;font-family:'DM Sans',sans-serif}
-  .nav-search.open input{width:148px;opacity:1}
-  .s-icon{position:absolute;left:0;color:#666;cursor:pointer;font-size:12px;padding:6px;transition:color .2s}
-  .s-icon:hover{color:#ccc}
-  .nav-search.open .s-icon{left:6px}
+/* ── NAV ─────────────────────────────────────────────────────── */
+#dashboard{display:none;min-height:100vh;background:var(--bg)}
+#dashboard.active{display:block}
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:66px;display:flex;align-items:center;padding:0 clamp(16px,4vw,56px);gap:clamp(14px,2.5vw,28px);transition:background .4s}
+.nav.scrolled{background:rgba(20,20,20,.98)}
+.nav::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.9) 0%,transparent 100%);pointer-events:none}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.5vw,34px);color:var(--red);letter-spacing:3px;flex-shrink:0;position:relative}
+.nav-links{display:flex;gap:clamp(12px,2vw,20px);list-style:none;position:relative}
+.nav-links a{color:var(--text);font-size:13px;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;position:relative}
+.nav-avatar{width:32px;height:32px;border-radius:4px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;background:var(--bg3);flex-shrink:0}
+.nav-avatar img{width:100%;height:100%;object-fit:cover}
+.back-btn{background:transparent;border:none;color:var(--text-dim);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;padding:6px 12px;border-radius:2px;font-family:'DM Sans',sans-serif;transition:color .2s,background .2s}
+.back-btn:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-search{position:relative;display:flex;align-items:center}
+.nav-search input{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 12px 6px 27px;border-radius:2px;font-size:12px;width:0;transition:width .3s,opacity .3s;opacity:0;outline:none;font-family:'DM Sans',sans-serif}
+.nav-search.open input{width:148px;opacity:1}
+.s-icon{position:absolute;left:0;color:#666;cursor:pointer;font-size:12px;padding:6px;transition:color .2s}
+.s-icon:hover{color:#ccc}
+.nav-search.open .s-icon{left:6px}
 
-  /* ── HERO ──────────────────────────────────────────────────── */
-  .hero{position:relative;height:clamp(400px,62vh,680px);overflow:hidden;display:flex;align-items:flex-end;padding:0 clamp(24px,5vw,80px) clamp(36px,6vh,72px)}
-  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:background-image .6s ease}
-  .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(20,20,20,.93) 30%,rgba(20,20,20,.08) 100%),linear-gradient(to top,rgba(20,20,20,1) 0%,transparent 55%)}
-  .hero-content{position:relative;z-index:2;max-width:480px}
-  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red);border-radius:2px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
-  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,6vw,72px);line-height:.95;letter-spacing:2px;color:#fff;margin-bottom:14px}
-  .hero-desc{font-size:clamp(12px,1.4vw,14px);color:#ccc;line-height:1.65;margin-bottom:22px;max-width:360px}
-  .hero-btns{display:flex;gap:10px;flex-wrap:wrap}
-  .btn-play,.btn-info{display:flex;align-items:center;gap:7px;padding:10px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:transform .15s,opacity .15s}
-  .btn-play:hover,.btn-info:hover{transform:scale(1.04);opacity:.9}
-  .btn-play{background:#fff;color:#000}
-  .btn-info{background:rgba(109,109,110,.7);color:#fff}
+/* ── HERO ─────────────────────────────────────────────────────── */
+.hero{position:relative;height:clamp(400px,62vh,680px);overflow:hidden;display:flex;align-items:flex-end;padding:0 clamp(24px,5vw,80px) clamp(36px,6vh,72px)}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(20,20,20,.93) 30%,rgba(20,20,20,.08) 100%),linear-gradient(to top,rgba(20,20,20,1) 0%,transparent 55%)}
+.hero-content{position:relative;z-index:2;max-width:480px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red);border-radius:2px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,6vw,72px);line-height:.95;letter-spacing:2px;color:#fff;margin-bottom:14px}
+.hero-desc{font-size:clamp(12px,1.4vw,14px);color:#ccc;line-height:1.65;margin-bottom:22px;max-width:360px}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn-play,.btn-info{display:flex;align-items:center;gap:7px;padding:10px 20px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:transform .15s,opacity .15s}
+.btn-play:hover,.btn-info:hover{transform:scale(1.04);opacity:.9}
+.btn-play{background:#fff;color:#000}
+.btn-info{background:rgba(109,109,110,.7);color:#fff}
 
-  /* ── ROWS ──────────────────────────────────────────────────── */
-  .rows-section{padding-bottom:60px;margin-top:-36px;position:relative;z-index:2}
-  .row{margin-bottom:clamp(20px,3vh,36px);padding:0 clamp(16px,4vw,56px)}
-  .row-title{font-size:clamp(13px,1.5vw,17px);font-weight:700;color:#e5e5e5;margin-bottom:10px;display:flex;align-items:center;gap:10px}
-  .row-tag{color:var(--red);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600}
-  .row-count{font-size:10px;color:#444;margin-left:auto}
-  .row-scroll{display:flex;gap:clamp(6px,1vw,9px);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:6px}
-  .row-scroll::-webkit-scrollbar{display:none}
+/* ── ROWS ─────────────────────────────────────────────────────── */
+.rows-section{padding-bottom:80px;margin-top:-36px;position:relative;z-index:2}
+.row{margin-bottom:clamp(24px,4vh,44px);padding:0 clamp(16px,4vw,56px)}
+.row-title{font-size:clamp(13px,1.5vw,17px);font-weight:700;color:#e5e5e5;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.row-tag{color:var(--red);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600}
+.row-count{font-size:10px;color:#444;margin-left:auto}
+.row-scroll{display:flex;gap:clamp(10px,1.5vw,16px);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px;align-items:flex-start}
+.row-scroll::-webkit-scrollbar{display:none}
 
-  /* ── CARDS ──────────────────────────────────────────────────── */
-  .card{flex:0 0 var(--card-w);height:var(--card-h);border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;scroll-snap-align:start;transition:transform .3s cubic-bezier(.22,1,.36,1),z-index 0s .3s;background:var(--bg3)}
-  .card:hover{transform:scale(1.28);z-index:10;transition:transform .3s cubic-bezier(.22,1,.36,1),z-index 0s 0s}
-  .card:first-child:hover{transform-origin:left center}
-  .card:last-child:hover{transform-origin:right center}
-  .card-bg{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .card-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .3s}
-  .card:hover .card-bg img{filter:brightness(.35)}
-  .card-bg.no-img{background:linear-gradient(135deg,var(--bg3),var(--bg4))}
-  .fi{font-size:24px;opacity:.2;pointer-events:none}
-  .card-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.78) 0%,transparent 58%);opacity:0;transition:opacity .28s;display:flex;flex-direction:column;justify-content:flex-end;padding:7px;gap:3px;z-index:2}
-  .card:hover .card-overlay{opacity:1}
-  .card-title{font-size:9px;font-weight:700;color:#fff;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .card-meta{display:flex;align-items:center;gap:5px;font-size:8px;color:#aaa}
-  .card-match{color:#46d369;font-weight:700}
-  .card-actions{display:flex;gap:4px;margin-bottom:3px;opacity:0;transition:opacity .2s .08s}
-  .card:hover .card-actions{opacity:1}
-  .card-btn{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,background .15s;font-size:9px;color:#fff}
-  .card-btn:hover{border-color:#fff;background:rgba(255,255,255,.18)}
-  .skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
-  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  .empty-row{display:flex;align-items:center;gap:12px;padding:16px 0}
-  .empty-row p{font-size:12px;color:#444}
+/* ── CARD WRAPPER (includes name label below) ─────────────────── */
+.card-wrap{flex:0 0 var(--card-w);display:flex;flex-direction:column;gap:7px;scroll-snap-align:start}
 
-  /* ── TOAST ──────────────────────────────────────────────────── */
-  #toast-el{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(25,25,25,.97);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 20px;font-size:12px;color:#fff;z-index:9500;opacity:0;pointer-events:none;transition:opacity .28s,transform .28s;white-space:nowrap;max-width:90vw;text-align:center}
-  #toast-el.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── CARD ─────────────────────────────────────────────────────── */
+.card{width:100%;height:var(--card-h);border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;transition:transform .3s cubic-bezier(.22,1,.36,1),z-index 0s .3s;background:var(--bg3)}
+.card:hover{transform:scale(1.1);z-index:10;transition:transform .3s cubic-bezier(.22,1,.36,1),z-index 0s 0s}
+.card-wrap:first-child .card:hover{transform-origin:left center}
+.card-wrap:last-child  .card:hover{transform-origin:right center}
+.card-bg{width:100%;height:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .3s}
+.card:hover .card-bg img{filter:brightness(.3)}
+.card-bg.no-img{background:linear-gradient(135deg,var(--bg3),var(--bg4))}
+.fi{font-size:24px;opacity:.2;pointer-events:none}
+/* single open button — shown on hover */
+.card-open-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s;z-index:3}
+.card:hover .card-open-btn{opacity:1}
+.open-btn{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .15s;color:#fff;font-size:16px}
+.open-btn:hover{background:rgba(255,255,255,.2);transform:scale(1.15)}
+/* card name label below */
+.card-label{font-size:10px;font-weight:500;color:var(--text-dim);text-align:center;line-height:1.3;padding:0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .2s}
+.card-wrap:hover .card-label{color:#fff}
 
-  /* ── RESPONSIVE ─────────────────────────────────────────────── */
-  @media(max-width:768px){:root{--card-w:140px;--card-h:79px}.nav-links{display:none}.hero-desc{display:none}}
-  @media(max-width:480px){:root{--card-w:118px;--card-h:66px}.hero-title{font-size:clamp(28px,8vw,46px)}.signin-card{padding:28px 20px}}
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.empty-row{display:flex;align-items:center;gap:12px;padding:16px 0}
+.empty-row p{font-size:12px;color:#444}
+
+/* ── TOAST ─────────────────────────────────────────────────────── */
+#toast-el{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(25,25,25,.97);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 20px;font-size:12px;color:#fff;z-index:9500;opacity:0;pointer-events:none;transition:opacity .28s,transform .28s;white-space:nowrap;max-width:90vw;text-align:center}
+#toast-el.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ══ SLIDESHOW PLAYER ═══════════════════════════════════════════ */
+#slideshow{position:fixed;inset:0;z-index:8000;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center}
+#slideshow.open{display:flex}
+
+/* Page-flip 3D stage */
+.flip-stage{width:min(90vw,900px);height:min(80vh,600px);perspective:1400px;position:relative}
+.flip-book{width:100%;height:100%;position:relative;transform-style:preserve-3d}
+
+/* Each page sits in same slot; we animate them */
+.flip-page{position:absolute;inset:0;border-radius:10px;overflow:hidden;backface-visibility:hidden;transform-origin:left center}
+.flip-page img{width:100%;height:100%;object-fit:contain;background:#000;display:block}
+/* States: current = visible, next = staged behind, leaving = animating out */
+.flip-page.state-current{transform:rotateY(0deg);z-index:2}
+.flip-page.state-next{transform:rotateY(-180deg);z-index:1}
+.flip-page.anim-flip-out{animation:flipOut .6s cubic-bezier(.4,0,.2,1) forwards;z-index:3}
+.flip-page.anim-flip-in {animation:flipIn  .6s cubic-bezier(.4,0,.2,1) forwards;z-index:2}
+@keyframes flipOut{
+  0%  {transform:rotateY(0deg);  box-shadow:none}
+  50% {transform:rotateY(-90deg);box-shadow:-20px 0 40px rgba(0,0,0,.7)}
+  100%{transform:rotateY(-180deg)}
+}
+@keyframes flipIn{
+  0%  {transform:rotateY(180deg)}
+  50% {transform:rotateY(90deg); box-shadow:-20px 0 40px rgba(0,0,0,.7)}
+  100%{transform:rotateY(0deg);  box-shadow:none}
+}
+/* Page curl shadow edge on current */
+.flip-page.state-current::after{content:'';position:absolute;top:0;right:0;width:40px;height:100%;background:linear-gradient(to left,rgba(0,0,0,.25),transparent);pointer-events:none}
+
+/* Controls bar */
+.ss-controls{display:flex;align-items:center;gap:16px;margin-top:18px;z-index:2}
+.ss-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s}
+.ss-btn:hover{background:rgba(255,255,255,.22);transform:scale(1.1)}
+.ss-btn.lg{width:48px;height:48px;font-size:20px;background:rgba(229,9,20,.85);border-color:var(--red)}
+.ss-btn.lg:hover{background:var(--red)}
+.ss-counter{font-size:13px;color:rgba(255,255,255,.6);min-width:70px;text-align:center;font-family:'DM Sans',sans-serif}
+.ss-title{font-size:13px;color:rgba(255,255,255,.8);max-width:500px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px;font-style:italic}
+.ss-progress{width:min(90vw,900px);height:3px;background:rgba(255,255,255,.15);border-radius:2px;margin-top:10px;overflow:hidden}
+.ss-progress-fill{height:100%;background:var(--red);width:0%;transition:width .3s linear}
+.ss-close{position:absolute;top:18px;right:22px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:10}
+.ss-close:hover{background:rgba(229,9,20,.7)}
+.ss-speed{font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;padding:4px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);transition:all .2s;user-select:none}
+.ss-speed:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+
+/* ── LIGHTBOX (single image) ────────────────────────────────── */
+#lightbox{position:fixed;inset:0;z-index:7000;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#lightbox.open{display:flex}
+#lightbox img{max-width:90vw;max-height:82vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 80px rgba(0,0,0,.8)}
+.lb-close{position:absolute;top:18px;right:22px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.lb-close:hover{background:rgba(229,9,20,.7)}
+.lb-name{font-size:13px;color:rgba(255,255,255,.6);font-style:italic}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media(max-width:768px){:root{--card-w:140px;--card-h:79px}.nav-links{display:none}.hero-desc{display:none}}
+@media(max-width:480px){:root{--card-w:118px;--card-h:66px}.hero-title{font-size:clamp(28px,8vw,46px)}.signin-card{padding:28px 20px}}
 </style>
 </head>
 <body>
@@ -162,14 +211,14 @@
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
 </div>
 
-<!-- SIGN-IN SCREEN -->
+<!-- SIGN-IN -->
 <div id="signin-screen">
   <div class="signin-logo">YEARFLIX</div>
   <div class="signin-sub">Your years, reimagined</div>
   <div class="signin-card">
     <h2>Sign in to continue</h2>
     <p>YearFlix reads your photos directly from Google Drive — no uploads, no copies, your originals stay in Drive.</p>
-    <button class="btn-google" id="btn-google-signin" onclick="handleSignIn()">
+    <button class="btn-google" onclick="handleSignIn()">
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
       Sign in with Google
     </button>
@@ -217,7 +266,7 @@
       <h1 class="hero-title" id="hero-title"></h1>
       <p class="hero-desc" id="hero-desc"></p>
       <div class="hero-btns">
-        <button class="btn-play" onclick="showToast('▶  Playing...')">▶ Play</button>
+        <button class="btn-play" id="btn-hero-play">▶ Play</button>
         <button class="btn-info" onclick="showToast('ℹ More info coming soon')">ⓘ More Info</button>
       </div>
     </div>
@@ -225,440 +274,495 @@
   <div class="rows-section" id="rows-section"></div>
 </div>
 
+<!-- SLIDESHOW PLAYER -->
+<div id="slideshow">
+  <button class="ss-close" onclick="closeSlideshow()">✕</button>
+  <div class="flip-stage">
+    <div class="flip-book" id="flip-book">
+      <div class="flip-page state-current" id="page-a"><img id="img-a" src="" alt=""></div>
+      <div class="flip-page state-next"    id="page-b"><img id="img-b" src="" alt=""></div>
+    </div>
+  </div>
+  <div class="ss-title" id="ss-title"></div>
+  <div class="ss-progress"><div class="ss-progress-fill" id="ss-progress-fill"></div></div>
+  <div class="ss-controls">
+    <button class="ss-btn" onclick="ssPrev()" title="Previous">◀</button>
+    <button class="ss-btn lg" id="ss-playpause" onclick="ssTogglePlay()" title="Play/Pause">⏸</button>
+    <button class="ss-btn" onclick="ssNext()" title="Next">▶</button>
+    <span class="ss-counter" id="ss-counter">1 / 1</span>
+    <span class="ss-speed" onclick="ssToggleSpeed()" id="ss-speed" title="Change speed">3s</span>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lb-img" src="" alt="">
+  <div class="lb-name" id="lb-name"></div>
+</div>
+
 <div id="toast-el"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  CONFIG  — your project values
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════════════
 const CLIENT_ID      = '1023381661563-6g2sv1nh3lfspn7u1osvja0oohuda46l.apps.googleusercontent.com';
-const ROOT_FOLDER_ID = '13W7VIqhMUzZDxTKgoBjiH_WNsgO59xVv';   // Yearflix folder
+const ROOT_FOLDER_ID = '13W7VIqhMUzZDxTKgoBjiH_WNsgO59xVv';
 const SCOPES         = 'https://www.googleapis.com/auth/drive.readonly';
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  STATIC DATA
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 const YEARS      = ['2021','2022','2023','2024','2025'];
 const YEAR_ICONS = ['🌙','💫','⚡','🔥','🚀'];
-const HUES = [
-  {bg:['#3d0000','#6b0000']},{bg:['#00003d','#000066']},{bg:['#003d00','#006600']},
-  {bg:['#3d2000','#663300']},{bg:['#1a003d','#2d006b']},
-];
-const GRADS = [
-  ['#1a0505','#3d0000'],['#050a1a','#00003d'],['#051a05','#003d00'],
-  ['#1a0f00','#3d2000'],['#0f0018','#1a003d'],['#001a18','#003d38'],
-  ['#1a0018','#3d0030'],['#0a1a00','#153d00'],['#001018','#00283d'],['#18100a','#3d2200'],
-];
-const ROWS_DEF = [
-  {label:'All Memories',         tag:'ALL'     },
-  {label:'Trending This Year',   tag:'HOT'     },
-  {label:'Top Picks for You',    tag:''        },
-  {label:'Critically Acclaimed', tag:'NEW'     },
-  {label:'Best of the Year',     tag:'ORIGINAL'},
-];
-const HERO_DATA = {
-  '2021':{title:'PHANTOM GRID',      desc:'In a world rebuilt from isolation, a lone operative navigates a fractured digital underground where every choice echoes across seven realities.',  badge:'YEARFLIX ORIGINAL' },
-  '2022':{title:'REBOUND THEORY',    desc:'The world snaps back — but nothing is the same. Two scientists race against an invisible collapse that rewrites human memory in real time.',      badge:'TOP PICK 2022'     },
-  '2023':{title:'THE MIND FORGE',    desc:'AI awakens not with a bang, but a whisper. A single engineer must decide whether to pull the plug on the greatest creation in history.',        badge:'AI THRILLER'       },
+const HUES=[{bg:['#3d0000','#6b0000']},{bg:['#00003d','#000066']},{bg:['#003d00','#006600']},{bg:['#3d2000','#663300']},{bg:['#1a003d','#2d006b']}];
+const GRADS=[['#1a0505','#3d0000'],['#050a1a','#00003d'],['#051a05','#003d00'],['#1a0f00','#3d2000'],['#0f0018','#1a003d'],['#001a18','#003d38'],['#1a0018','#3d0030'],['#0a1a00','#153d00'],['#001018','#00283d'],['#18100a','#3d2200']];
+const ROWS_DEF=[{label:'All Memories',tag:'ALL'},{label:'Trending This Year',tag:'HOT'},{label:'Top Picks for You',tag:''},{label:'Critically Acclaimed',tag:'NEW'},{label:'Best of the Year',tag:'ORIGINAL'}];
+const HERO_DATA={
+  '2021':{title:'PHANTOM GRID',      desc:'In a world rebuilt from isolation, a lone operative navigates a fractured digital underground where every choice echoes across seven realities.',  badge:'YEARFLIX ORIGINAL'},
+  '2022':{title:'REBOUND THEORY',    desc:'The world snaps back — but nothing is the same. Two scientists race against an invisible collapse that rewrites human memory in real time.',      badge:'TOP PICK 2022'},
+  '2023':{title:'THE MIND FORGE',    desc:'AI awakens not with a bang, but a whisper. A single engineer must decide whether to pull the plug on the greatest creation in history.',        badge:'AI THRILLER'},
   '2024':{title:'QUANTUM STATE',     desc:'She exists in two timelines. Both versions are hunting the same killer. Only one can survive the convergence.',                                badge:'YEARFLIX EXCLUSIVE'},
-  '2025':{title:'ZERO HOUR PROTOCOL',desc:"Humanity has 72 hours before first contact. The message isn't a greeting — it's an invoice. Nobody remembers agreeing.",                       badge:'MOST WATCHED 2025' },
+  '2025':{title:'ZERO HOUR PROTOCOL',desc:"Humanity has 72 hours before first contact. The message isn't a greeting — it's an invoice. Nobody remembers agreeing.",                       badge:'MOST WATCHED 2025'},
 };
-const MATCH  = ['96%','92%','88%','97%','84%','93%','79%','95%','87%','91%'];
-const GENRES = ['Action','Sci-Fi','Thriller','Drama','Mystery','Crime','Noir','Cyber','Fantasy','Horror'];
-const YLBLS  = ['2020','2021','2022','2023','2024','2025'];
 
-// ═══════════════════════════════════════════════════════════
+// Creative "Shrutipie" names — used in sequence per image slot
+const SHRUTIPIE_NAMES = [
+  'Shrutipie & the Golden Hour','Shrutipie Unfiltered','When Shrutipie Laughed',
+  'Shrutipie\'s Secret Garden','Shrutipie in the Wild','Shrutipie Steals the Frame',
+  'A Moment with Shrutipie','Shrutipie After Dark','Shrutipie & the Soft Light',
+  'Shrutipie in Full Bloom','Shrutipie vs. the Lens','Shrutipie, Unposed',
+  'The Shrutipie Chronicles','Shrutipie at Her Best','Shrutipie Goes Everywhere',
+  'Shrutipie & Golden Vibes','Shrutipie Under the Stars','Shrutipie in Motion',
+  'Shrutipie\'s Candid Hour','Shrutipie, Chapter One','Shrutipie Owns the Light',
+  'Shrutipie & the Blues','Shrutipie Behind the Scenes','Shrutipie\'s Finest Moment',
+  'Shrutipie Breaks the Internet','Shrutipie at the Edge','Shrutipie in Colour',
+  'Dear Shrutipie','Shrutipie & Sunsets','Shrutipie, Forever Young',
+];
+
+// ═══════════════════════════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════════════
-let accessToken       = null;
-let tokenExpiry       = 0;
-let userProfile       = null;
-const folderIdCache   = {};   // year → Drive folder ID
-const urlCache        = {};   // year → [{id,name,url}, ...]
-let curYear = null, curIdx = null;
+// ═══════════════════════════════════════════════════════════════
+let accessToken=null, tokenExpiry=0, userProfile=null;
+const folderIdCache={}, urlCache={};
+let curYear=null, curIdx=null;
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  HELPERS
-// ═══════════════════════════════════════════════════════════
-const rand    = a => a[Math.floor(Math.random() * a.length)];
+// ═══════════════════════════════════════════════════════════════
+const rand    = a => a[Math.floor(Math.random()*a.length)];
 const randInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
 const makeBg  = g => `linear-gradient(135deg,${g[0]} 0%,${g[1]} 100%)`;
-const shuffled= a => [...a].sort(() => Math.random() - .5);
+const shuffled= a => [...a].sort(()=>Math.random()-.5);
 
 let _tt;
-function showToast(msg) {
-  const t = document.getElementById('toast-el');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2600);
+function showToast(msg){
+  const t=document.getElementById('toast-el');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function hideLoader(){
+  const el=document.getElementById('loader');
+  if(el.dataset.gone) return;
+  el.dataset.gone='1'; el.classList.add('hide');
+  setTimeout(()=>el.style.display='none',520);
 }
 
-function hideLoader() {
-  const el = document.getElementById('loader');
-  if (el.dataset.gone) return;
-  el.dataset.gone = '1';
-  el.classList.add('hide');
-  setTimeout(() => el.style.display = 'none', 520);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  GOOGLE SIGN-IN  (GIS token flow)
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  GOOGLE SIGN-IN
+// ═══════════════════════════════════════════════════════════════
 let tokenClient;
-
-function initGIS() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: async (resp) => {
-      if (resp.error) {
-        showToast('❌ Sign-in failed: ' + resp.error);
-        return;
-      }
-      accessToken = resp.access_token;
-      tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
-      // Fetch user profile
-      try {
-        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: 'Bearer ' + accessToken }
-        });
-        userProfile = await r.json();
-      } catch(e) { userProfile = null; }
+function initGIS(){
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID, scope:SCOPES,
+    callback:async(resp)=>{
+      if(resp.error){ showToast('❌ Sign-in failed: '+resp.error); return; }
+      accessToken=resp.access_token;
+      tokenExpiry=Date.now()+(resp.expires_in-60)*1000;
+      try{
+        const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+accessToken}});
+        userProfile=await r.json();
+      }catch(e){ userProfile=null; }
       showProfileScreen();
     }
   });
 }
-
-function handleSignIn() {
-  if (!tokenClient) {
-    showToast('⚠ Google Sign-In not ready yet, try again in a moment.');
-    return;
-  }
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+function handleSignIn(){
+  if(!tokenClient){ showToast('⚠ Not ready, try again.'); return; }
+  tokenClient.requestAccessToken({prompt:'consent'});
 }
-
-function handleSignOut() {
-  if (accessToken) {
-    google.accounts.oauth2.revoke(accessToken);
-    accessToken = null;
-  }
-  userProfile = null;
-  Object.keys(urlCache).forEach(k => delete urlCache[k]);
-  Object.keys(folderIdCache).forEach(k => delete folderIdCache[k]);
-  // Hide dashboard & profiles, show sign-in
+function handleSignOut(){
+  if(accessToken) google.accounts.oauth2.revoke(accessToken);
+  accessToken=null; userProfile=null;
+  Object.keys(urlCache).forEach(k=>delete urlCache[k]);
+  Object.keys(folderIdCache).forEach(k=>delete folderIdCache[k]);
   document.getElementById('dashboard').classList.remove('active');
-  document.getElementById('profile-screen').style.display = 'none';
+  document.getElementById('profile-screen').style.display='none';
   document.getElementById('profile-screen').classList.remove('visible');
   showSignIn();
 }
-
-async function ensureToken() {
-  if (accessToken && Date.now() < tokenExpiry) return true;
-  // Token expired — request a new one silently
-  return new Promise(resolve => {
-    tokenClient.callback = async (resp) => {
-      if (resp.error) { resolve(false); return; }
-      accessToken = resp.access_token;
-      tokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
+async function ensureToken(){
+  if(accessToken&&Date.now()<tokenExpiry) return true;
+  return new Promise(resolve=>{
+    tokenClient.callback=async(resp)=>{
+      if(resp.error){ resolve(false); return; }
+      accessToken=resp.access_token;
+      tokenExpiry=Date.now()+(resp.expires_in-60)*1000;
       resolve(true);
     };
-    tokenClient.requestAccessToken({ prompt: '' });
+    tokenClient.requestAccessToken({prompt:''});
   });
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  DRIVE API
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+function thumbUrl(id){ return `https://lh3.googleusercontent.com/d/${id}=s600`; }
 
-// Build a thumbnail URL that works as an <img> src
-// Uses the Drive thumbnail endpoint which is CORS-accessible with a token
-function thumbUrl(fileId) {
-  return `https://lh3.googleusercontent.com/d/${fileId}=s400`;
-}
-
-// Direct image URL via Drive API (works for images shared or owned by user)
-function driveImgUrl(fileId) {
-  return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&access_token=${accessToken}`;
-}
-
-async function driveGet(url) {
+async function driveGet(url){
   await ensureToken();
-  const r = await fetch(url, { headers: { Authorization: 'Bearer ' + accessToken } });
-  if (!r.ok) throw new Error(`Drive API ${r.status}: ${r.statusText}`);
+  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken}});
+  if(!r.ok) throw new Error(`${r.status}`);
   return r.json();
 }
-
-// Find the subfolder ID for a given year name inside ROOT_FOLDER_ID
-async function getYearFolderId(year) {
-  if (folderIdCache[year]) return folderIdCache[year];
-  const q = encodeURIComponent(
-    `'${ROOT_FOLDER_ID}' in parents and name='${year}' and mimeType='application/vnd.google-apps.folder' and trashed=false`
-  );
-  const data = await driveGet(
-    `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&pageSize=1`
-  );
-  const folder = data.files?.[0];
-  if (!folder) { console.warn(`[YearFlix] No folder named "${year}" inside Yearflix root`); return null; }
-  folderIdCache[year] = folder.id;
+async function getYearFolderId(year){
+  if(folderIdCache[year]) return folderIdCache[year];
+  const q=encodeURIComponent(`'${ROOT_FOLDER_ID}' in parents and name='${year}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const data=await driveGet(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&pageSize=1`);
+  const folder=data.files?.[0];
+  if(!folder){ console.warn(`[YF] No folder "${year}"`); return null; }
+  folderIdCache[year]=folder.id;
   return folder.id;
 }
-
-// List image files inside a year subfolder, return array of {id, name, thumbUrl, imgUrl}
-async function fetchYearImages(year) {
-  if (urlCache[year]) return urlCache[year];
-  try {
-    const folderId = await getYearFolderId(year);
-    if (!folderId) { urlCache[year] = []; return []; }
-
-    const IMAGE_MIMES = [
-      'image/jpeg','image/png','image/webp','image/gif',
-      'image/heic','image/heif','image/bmp','image/tiff'
-    ].map(m => `mimeType='${m}'`).join(' or ');
-
-    const q = encodeURIComponent(`'${folderId}' in parents and (${IMAGE_MIMES}) and trashed=false`);
-    let all = [], pageToken = '';
-
-    do {
-      const ptParam = pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '';
-      const data = await driveGet(
-        `https://www.googleapis.com/drive/v3/files?q=${q}&fields=nextPageToken,files(id,name)&pageSize=100${ptParam}`
-      );
-      if (data.files) all = all.concat(data.files);
-      pageToken = data.nextPageToken || '';
-    } while (pageToken);
-
-    const imgs = all.map(f => ({
-      id:       f.id,
-      name:     f.name,
-      // Use lh3 thumbnail — doesn't need Authorization header, works in <img> tags
-      thumbUrl: thumbUrl(f.id),
-      // Full-res URL needs token — used for hero banner via JS fetch
-      imgUrl:   driveImgUrl(f.id),
-    }));
-
-    urlCache[year] = imgs;
-    return imgs;
-  } catch(e) {
-    console.warn(`[YearFlix] fetchYearImages(${year}) failed:`, e.message);
-    urlCache[year] = [];
-    return [];
+async function fetchYearImages(year){
+  if(urlCache[year]) return urlCache[year];
+  try{
+    const folderId=await getYearFolderId(year);
+    if(!folderId){ urlCache[year]=[]; return []; }
+    const mimes=['image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif','image/bmp']
+      .map(m=>`mimeType='${m}'`).join(' or ');
+    const q=encodeURIComponent(`'${folderId}' in parents and (${mimes}) and trashed=false`);
+    let all=[],pt='';
+    do{
+      const r=await driveGet(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=nextPageToken,files(id,name)&pageSize=100${pt?'&pageToken='+encodeURIComponent(pt):''}`);
+      if(r.files) all=all.concat(r.files);
+      pt=r.nextPageToken||'';
+    }while(pt);
+    urlCache[year]=all.map((f,i)=>({id:f.id,name:f.name,thumbUrl:thumbUrl(f.id),label:SHRUTIPIE_NAMES[i%SHRUTIPIE_NAMES.length]}));
+    return urlCache[year];
+  }catch(e){
+    console.warn(`[YF] fetchYearImages(${year}):`,e.message);
+    urlCache[year]=[]; return [];
   }
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  SLIDESHOW PLAYER
+// ═══════════════════════════════════════════════════════════════
+let ssImages=[], ssIdx=0, ssPlaying=true, ssTimer=null, ssFlipping=false;
+const SS_SPEEDS=[3000,5000,8000];
+let ssSpeedIdx=0;
+
+function openSlideshow(images, startIdx=0){
+  if(!images||!images.length){ showToast('No images to play'); return; }
+  ssImages=images; ssIdx=startIdx; ssPlaying=true; ssSpeedIdx=0;
+  document.getElementById('ss-speed').textContent=SS_SPEEDS[0]/1000+'s';
+  document.body.style.overflow='hidden';
+  // Load first two images
+  const imgA=document.getElementById('img-a');
+  const imgB=document.getElementById('img-b');
+  const pageA=document.getElementById('page-a');
+  const pageB=document.getElementById('page-b');
+  pageA.className='flip-page state-current';
+  pageB.className='flip-page state-next';
+  imgA.src=ssImages[ssIdx].thumbUrl;
+  imgB.src=ssImages[(ssIdx+1)%ssImages.length].thumbUrl;
+  ssUpdateInfo();
+  document.getElementById('slideshow').classList.add('open');
+  document.getElementById('ss-playpause').textContent='⏸';
+  ssScheduleNext();
+}
+function closeSlideshow(){
+  clearTimeout(ssTimer); ssPlaying=false;
+  document.getElementById('slideshow').classList.remove('open');
+  document.body.style.overflow='';
+}
+function ssUpdateInfo(){
+  document.getElementById('ss-counter').textContent=`${ssIdx+1} / ${ssImages.length}`;
+  document.getElementById('ss-title').textContent=ssImages[ssIdx].label;
+  document.getElementById('ss-progress-fill').style.width=((ssIdx+1)/ssImages.length*100)+'%';
+}
+function ssFlip(direction){
+  if(ssFlipping) return;
+  ssFlipping=true;
+  const pageA=document.getElementById('page-a');
+  const pageB=document.getElementById('page-b');
+  const imgA=document.getElementById('img-a');
+  const imgB=document.getElementById('img-b');
+  const isCurrent=(pageA.classList.contains('state-current'));
+  const curPage =isCurrent?pageA:pageB;
+  const nxtPage =isCurrent?pageB:pageA;
+  const curImg  =isCurrent?imgA:imgB;
+  const nxtImg  =isCurrent?imgB:imgA;
+
+  if(direction==='next'){
+    ssIdx=(ssIdx+1)%ssImages.length;
+  } else {
+    ssIdx=(ssIdx-1+ssImages.length)%ssImages.length;
+  }
+  // Stage the new image in the next page
+  nxtImg.src=ssImages[ssIdx].thumbUrl;
+  nxtPage.className='flip-page state-next';
+
+  // Animate
+  curPage.className='flip-page anim-flip-out';
+  nxtPage.className='flip-page anim-flip-in';
+
+  setTimeout(()=>{
+    curPage.className='flip-page state-next';
+    nxtPage.className='flip-page state-current';
+    // Pre-load the one after
+    const after=ssImages[(ssIdx+1)%ssImages.length];
+    curImg.src=after.thumbUrl;
+    ssUpdateInfo();
+    ssFlipping=false;
+  },620);
+}
+function ssNext(){ clearTimeout(ssTimer); ssFlip('next'); if(ssPlaying) ssScheduleNext(); }
+function ssPrev(){ clearTimeout(ssTimer); ssFlip('prev'); if(ssPlaying) ssScheduleNext(); }
+function ssScheduleNext(){
+  clearTimeout(ssTimer);
+  ssTimer=setTimeout(()=>{ if(ssPlaying){ ssFlip('next'); ssScheduleNext(); } }, SS_SPEEDS[ssSpeedIdx]);
+}
+function ssTogglePlay(){
+  ssPlaying=!ssPlaying;
+  document.getElementById('ss-playpause').textContent=ssPlaying?'⏸':'▶';
+  if(ssPlaying) ssScheduleNext(); else clearTimeout(ssTimer);
+}
+function ssToggleSpeed(){
+  ssSpeedIdx=(ssSpeedIdx+1)%SS_SPEEDS.length;
+  document.getElementById('ss-speed').textContent=SS_SPEEDS[ssSpeedIdx]/1000+'s';
+  if(ssPlaying){ clearTimeout(ssTimer); ssScheduleNext(); }
+}
+// Keyboard navigation
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('slideshow').classList.contains('open')) return;
+  if(e.key==='ArrowRight') ssNext();
+  if(e.key==='ArrowLeft')  ssPrev();
+  if(e.key==='Escape')     closeSlideshow();
+  if(e.key===' ')          ssTogglePlay();
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  LIGHTBOX  (single image open)
+// ═══════════════════════════════════════════════════════════════
+function openLightbox(img){
+  document.getElementById('lb-img').src=img.thumbUrl;
+  document.getElementById('lb-name').textContent=img.label;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+window.closeLightbox=function(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+};
+document.getElementById('lightbox').addEventListener('click',function(e){
+  if(e.target===this) closeLightbox();
+});
+
+// ═══════════════════════════════════════════════════════════════
 //  SCREENS
-// ═══════════════════════════════════════════════════════════
-function showSignIn() {
-  const ss = document.getElementById('signin-screen');
-  ss.style.display = 'flex';
-  requestAnimationFrame(() => ss.classList.add('visible'));
+// ═══════════════════════════════════════════════════════════════
+function showSignIn(){
+  const ss=document.getElementById('signin-screen');
+  ss.style.display='flex';
+  requestAnimationFrame(()=>ss.classList.add('visible'));
 }
-
-async function showProfileScreen() {
-  // Hide sign-in
-  const ss = document.getElementById('signin-screen');
+async function showProfileScreen(){
+  const ss=document.getElementById('signin-screen');
   ss.classList.remove('visible');
-  setTimeout(() => { ss.style.display = 'none'; }, 400);
-
-  // Show user badge
-  if (userProfile) {
-    const badge = document.getElementById('user-badge');
-    badge.style.display = 'flex';
-    document.getElementById('user-pic').src  = userProfile.picture || '';
-    document.getElementById('user-name').textContent = userProfile.name || userProfile.email || '';
+  setTimeout(()=>ss.style.display='none',400);
+  if(userProfile){
+    document.getElementById('user-badge').style.display='flex';
+    document.getElementById('user-pic').src=userProfile.picture||'';
+    document.getElementById('user-name').textContent=userProfile.name||userProfile.email||'';
   }
-
-  const ps = document.getElementById('profile-screen');
-  ps.classList.remove('exit');
-  ps.style.display = 'flex';
-  requestAnimationFrame(() => ps.classList.add('visible'));
-
-  // Prefetch all years in parallel
-  await Promise.all(YEARS.map(y => fetchYearImages(y)));
+  const ps=document.getElementById('profile-screen');
+  ps.classList.remove('exit'); ps.style.display='flex';
+  requestAnimationFrame(()=>ps.classList.add('visible'));
+  await Promise.all(YEARS.map(y=>fetchYearImages(y)));
   buildProfiles();
 }
 
-// ── Profiles grid ─────────────────────────────────────────
-function buildProfiles() {
-  const grid = document.getElementById('profiles-grid');
-  grid.innerHTML = '';
-  YEARS.forEach((year, i) => {
-    const hue  = HUES[i];
-    const imgs = urlCache[year] || [];
-    const pic  = imgs.length ? rand(imgs) : null;
-
-    const card = document.createElement('div');
-    card.className = 'profile-card';
-
-    const inner = pic
-      ? `<img src="${pic.thumbUrl}" alt="${year}" loading="lazy"
-             onerror="this.replaceWith(Object.assign(document.createElement('div'),
-               {className:'p-avatar-inner',textContent:'${YEAR_ICONS[i]}'}));">`
-      : `<div class="p-avatar-inner">${YEAR_ICONS[i]}</div>`;
-
-    card.innerHTML = `
+function buildProfiles(){
+  const grid=document.getElementById('profiles-grid');
+  grid.innerHTML='';
+  YEARS.forEach((year,i)=>{
+    const hue=HUES[i], imgs=urlCache[year]||[];
+    const pic=imgs.length?rand(imgs):null;
+    const card=document.createElement('div');
+    card.className='profile-card';
+    const inner=pic
+      ?`<img src="${pic.thumbUrl}" alt="${year}" loading="lazy"
+            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'p-avatar-inner',textContent:'${YEAR_ICONS[i]}'}));">`
+      :`<div class="p-avatar-inner">${YEAR_ICONS[i]}</div>`;
+    card.innerHTML=`
       <div class="p-avatar" style="background:${makeBg(hue.bg)}">${inner}</div>
       <div class="p-name">${year}</div>
-      <div class="p-count">${imgs.length ? imgs.length + ' photo' + (imgs.length > 1 ? 's' : '') : 'No photos'}</div>`;
-    card.addEventListener('click', () => openDashboard(year, i));
+      <div class="p-count">${imgs.length?imgs.length+' photo'+(imgs.length>1?'s':''):'No photos'}</div>`;
+    card.addEventListener('click',()=>openDashboard(year,i));
     grid.appendChild(card);
   });
 }
 
-// ── Dashboard ─────────────────────────────────────────────
-async function openDashboard(year, idx) {
-  curYear = year; curIdx = idx;
-  const ps = document.getElementById('profile-screen');
+async function openDashboard(year,idx){
+  curYear=year; curIdx=idx;
+  const ps=document.getElementById('profile-screen');
   ps.classList.add('exit');
-  setTimeout(async () => {
-    ps.style.display = 'none'; ps.classList.remove('visible');
-    const d = document.getElementById('dashboard');
-    d.classList.add('active'); d.style.opacity = '0'; d.style.transition = 'opacity .45s ease';
-    await buildDashboard(year, idx);
-    requestAnimationFrame(() => d.style.opacity = '1');
-  }, 450);
+  setTimeout(async()=>{
+    ps.style.display='none'; ps.classList.remove('visible');
+    const d=document.getElementById('dashboard');
+    d.classList.add('active'); d.style.opacity='0'; d.style.transition='opacity .45s ease';
+    await buildDashboard(year,idx);
+    requestAnimationFrame(()=>d.style.opacity='1');
+  },450);
 }
-
-window.goBack = function() {
-  const d = document.getElementById('dashboard');
-  d.style.opacity = '0';
-  setTimeout(() => {
-    d.classList.remove('active'); d.style.opacity = '';
-    window.scrollTo(0, 0);
-    const ps = document.getElementById('profile-screen');
-    ps.style.display = 'flex'; ps.classList.remove('exit');
-    requestAnimationFrame(() => ps.classList.add('visible'));
+window.goBack=function(){
+  const d=document.getElementById('dashboard');
+  d.style.opacity='0';
+  setTimeout(()=>{
+    d.classList.remove('active'); d.style.opacity='';
+    window.scrollTo(0,0);
+    const ps=document.getElementById('profile-screen');
+    ps.style.display='flex'; ps.classList.remove('exit');
+    requestAnimationFrame(()=>ps.classList.add('visible'));
     buildProfiles();
-  }, 400);
+  },400);
 };
 
-async function buildDashboard(year, idx) {
-  const hue  = HUES[idx];
-  const hero = HERO_DATA[year];
-  const imgs = await fetchYearImages(year);
+async function buildDashboard(year,idx){
+  const hue=HUES[idx], hero=HERO_DATA[year];
+  const imgs=await fetchYearImages(year);
 
-  // ── Nav avatar ──
-  const av = document.getElementById('nav-avatar');
-  av.innerHTML = '';
-  if (userProfile?.picture) {
-    const img = document.createElement('img');
-    img.src = userProfile.picture; img.alt = 'You';
+  // Nav avatar
+  const av=document.getElementById('nav-avatar');
+  av.innerHTML='';
+  if(userProfile?.picture){
+    const img=document.createElement('img'); img.src=userProfile.picture; img.alt='You'; av.appendChild(img);
+  } else if(imgs.length){
+    const img=document.createElement('img'); img.src=rand(imgs).thumbUrl; img.alt=year;
+    img.onerror=()=>{ av.style.background=makeBg(hue.bg); av.textContent=YEAR_ICONS[idx]; };
     av.appendChild(img);
-  } else if (imgs.length) {
-    const img = document.createElement('img');
-    img.src = rand(imgs).thumbUrl; img.alt = year;
-    img.onerror = () => { av.style.background = makeBg(hue.bg); av.textContent = YEAR_ICONS[idx]; };
-    av.appendChild(img);
-  } else {
-    av.style.background = makeBg(hue.bg); av.textContent = YEAR_ICONS[idx];
+  } else { av.style.background=makeBg(hue.bg); av.textContent=YEAR_ICONS[idx]; }
+
+  // Hero
+  const heroBg=document.getElementById('hero-bg');
+  const fallback=`radial-gradient(ellipse at 20% 50%,${hue.bg[1]}cc 0%,transparent 60%),${makeBg(GRADS[idx%GRADS.length])}`;
+  heroBg.style.cssText=`background:${fallback}`;
+  if(imgs.length){
+    const hImg=rand(imgs);
+    const tmp=new Image();
+    tmp.onload=()=>{ heroBg.style.cssText=`background:url('${hImg.thumbUrl}') center/cover no-repeat`; };
+    tmp.src=hImg.thumbUrl;
   }
+  document.getElementById('hero-badge').textContent=hero.badge;
+  document.getElementById('hero-title').textContent=hero.title;
+  document.getElementById('hero-desc').textContent=hero.desc;
 
-  // ── Hero ──
-  const heroBg = document.getElementById('hero-bg');
-  const fallback = `radial-gradient(ellipse at 20% 50%,${hue.bg[1]}cc 0%,transparent 60%),${makeBg(GRADS[idx % GRADS.length])}`;
-  heroBg.style.cssText = `background:${fallback}`;
-  if (imgs.length) {
-    // Use thumbUrl for hero background (no auth header needed for lh3)
-    const heroImg = rand(imgs);
-    const tmp = new Image();
-    tmp.onload  = () => { heroBg.style.cssText = `background:url('${heroImg.thumbUrl}') center/cover no-repeat`; };
-    tmp.onerror = () => {};
-    tmp.src = heroImg.thumbUrl;
-  }
-  document.getElementById('hero-badge').textContent = hero.badge;
-  document.getElementById('hero-title').textContent  = hero.title;
-  document.getElementById('hero-desc').textContent   = hero.desc;
+  // Hero Play button — opens slideshow with all images of this year
+  const playBtn=document.getElementById('btn-hero-play');
+  playBtn.onclick=()=>{ if(imgs.length) openSlideshow(shuffled(imgs),0); else showToast('No photos yet for '+year); };
 
-  // ── Rows ──
-  const section = document.getElementById('rows-section');
-  section.innerHTML = '';
+  // Rows
+  const section=document.getElementById('rows-section');
+  section.innerHTML='';
+  const TOTAL=ROWS_DEF.length*15;
+  let pool=[];
+  if(imgs.length){ const sh=shuffled(imgs); while(pool.length<TOTAL) pool=pool.concat(sh); }
 
-  // Build shuffled pool
-  const TOTAL = ROWS_DEF.length * 15;
-  let pool = [];
-  if (imgs.length) {
-    const sh = shuffled(imgs);
-    while (pool.length < TOTAL) pool = pool.concat(sh);
-  }
-
-  ROWS_DEF.forEach((rd, ri) => {
-    const rowEl = document.createElement('div');
-    rowEl.className = 'row';
-    const tag = rd.tag ? `<span class="row-tag">${rd.tag}</span>` : '';
-    const countLbl = imgs.length ? `${imgs.length} photo${imgs.length > 1 ? 's' : ''}` : 'No photos';
-    rowEl.innerHTML = `
-      <div class="row-title">${rd.label}${tag}<span class="row-count">${countLbl}</span></div>
-      <div class="row-scroll" id="rs-${ri}"></div>`;
+  ROWS_DEF.forEach((rd,ri)=>{
+    const rowEl=document.createElement('div');
+    rowEl.className='row';
+    const tag=rd.tag?`<span class="row-tag">${rd.tag}</span>`:'';
+    const cnt=imgs.length?`${imgs.length} photo${imgs.length>1?'s':''}`:'No photos';
+    rowEl.innerHTML=`<div class="row-title">${rd.label}${tag}<span class="row-count">${cnt}</span></div><div class="row-scroll" id="rs-${ri}"></div>`;
     section.appendChild(rowEl);
-    const scroll = rowEl.querySelector(`#rs-${ri}`);
+    const scroll=rowEl.querySelector(`#rs-${ri}`);
 
-    if (!imgs.length) {
-      scroll.innerHTML = `<div class="empty-row"><p>No photos in your Drive folder for ${year}. Add images to the "${year}" subfolder in Yearflix.</p></div>`;
+    if(!imgs.length){
+      scroll.innerHTML=`<div class="empty-row"><p>No photos for ${year} in Drive.</p></div>`;
       return;
     }
 
-    const count = randInt(Math.min(imgs.length, 6), Math.min(imgs.length * 2, 15));
-    for (let c = 0; c < count; c++) {
-      const item     = pool[(ri * 15 + c) % pool.length];
-      const g        = GRADS[(ri + c) % GRADS.length];
-      const card     = document.createElement('div');
-      card.className = 'card skeleton';
-      // Use lh3 thumbUrl — renders without Authorization header
-      card.innerHTML = `
+    const count=randInt(Math.min(imgs.length,6),Math.min(imgs.length*2,15));
+    for(let c=0;c<count;c++){
+      const item=pool[(ri*15+c)%pool.length];
+      const g=GRADS[(ri+c)%GRADS.length];
+
+      // Card wrapper (card + name label)
+      const wrap=document.createElement('div');
+      wrap.className='card-wrap';
+
+      const card=document.createElement('div');
+      card.className='card skeleton';
+      card.innerHTML=`
         <div class="card-bg">
-          <img src="${item.thumbUrl}" alt="${item.name}" loading="lazy">
+          <img src="${item.thumbUrl}" alt="${item.label}" loading="lazy">
         </div>
-        <div class="card-overlay">
-          <div class="card-actions">
-            <div class="card-btn" onclick="event.stopPropagation();showToast('▶ Playing')">▶</div>
-            <div class="card-btn" onclick="event.stopPropagation();showToast('✚ Added to My List')">+</div>
-            <div class="card-btn" onclick="event.stopPropagation();showToast('👍 Liked!')">👍</div>
-          </div>
-          <div class="card-title">${item.name.replace(/\.[^.]+$/, '')}</div>
-          <div class="card-meta">
-            <span class="card-match">${MATCH[(ri + c) % MATCH.length]}</span>
-            <span>${year}</span>
-            <span>${GENRES[(ri + c) % GENRES.length]}</span>
-          </div>
+        <div class="card-open-btn">
+          <button class="open-btn" title="Open photo">🔍</button>
         </div>`;
 
-      const img  = card.querySelector('img');
-      const done = () => card.classList.remove('skeleton');
-      img.addEventListener('load',  done);
-      img.addEventListener('error', () => {
+      // Label below card
+      const label=document.createElement('div');
+      label.className='card-label';
+      label.textContent=item.label;
+
+      // Image load/error
+      const img=card.querySelector('img');
+      const done=()=>card.classList.remove('skeleton');
+      img.addEventListener('load',done);
+      img.addEventListener('error',()=>{
         done();
-        const bg = card.querySelector('.card-bg');
-        bg.classList.add('no-img'); bg.style.background = makeBg(g); img.remove();
-        bg.innerHTML = `<span class="fi">${YEAR_ICONS[ri % 5]}</span>`;
+        const bg=card.querySelector('.card-bg');
+        bg.classList.add('no-img'); bg.style.background=makeBg(g); img.remove();
+        bg.innerHTML=`<span class="fi">${YEAR_ICONS[ri%5]}</span>`;
       });
-      card.addEventListener('click', () => showToast(`▶ ${item.name.replace(/\.[^.]+$/, '')}`));
-      scroll.appendChild(card);
+
+      // Open button → lightbox
+      card.querySelector('.open-btn').addEventListener('click',e=>{
+        e.stopPropagation();
+        openLightbox(item);
+      });
+
+      // Click card → start slideshow from this image
+      card.addEventListener('click',()=>{
+        const startIdx=imgs.findIndex(x=>x.id===item.id);
+        openSlideshow(imgs, startIdx>=0?startIdx:0);
+      });
+
+      wrap.appendChild(card);
+      wrap.appendChild(label);
+      scroll.appendChild(wrap);
     }
   });
 
   // Sticky nav
-  const nav = document.getElementById('main-nav');
-  window.removeEventListener('scroll', window.__NS);
-  window.__NS = () => nav.classList.toggle('scrolled', window.scrollY > 60);
-  window.addEventListener('scroll', window.__NS, { passive: true });
+  const nav=document.getElementById('main-nav');
+  window.removeEventListener('scroll',window.__NS);
+  window.__NS=()=>nav.classList.toggle('scrolled',window.scrollY>60);
+  window.addEventListener('scroll',window.__NS,{passive:true});
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  BOOT
-// ═══════════════════════════════════════════════════════════
-window.addEventListener('load', () => {
-  // Wait for GIS script then init
-  const waitGIS = setInterval(() => {
-    if (window.google?.accounts?.oauth2) {
-      clearInterval(waitGIS);
-      initGIS();
-    }
-  }, 100);
-
-  // Hide loader after animation, then show sign-in
-  setTimeout(() => {
-    hideLoader();
-    showSignIn();
-  }, 2800);
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  const waitGIS=setInterval(()=>{
+    if(window.google?.accounts?.oauth2){ clearInterval(waitGIS); initGIS(); }
+  },100);
+  setTimeout(()=>{ hideLoader(); showSignIn(); },2800);
 });
 </script>
 </body>
