@@ -65,9 +65,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
 .outline-btn:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.05)}
 .outline-btn.red{border-color:rgba(229,9,20,.5);color:var(--red)}
 .outline-btn.red:hover{border-color:var(--red);color:#ff3030;background:rgba(229,9,20,.07)}
-.user-badge{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid #2a2a2a;border-radius:20px;padding:6px 14px 6px 6px}
-.user-badge img{width:24px;height:24px;border-radius:50%;object-fit:cover}
-.user-badge span{font-size:12px;color:var(--text-dim)}
+
 
 /* ── NAV ─────────────────────────────────────────────────────── */
 #dashboard{display:none;min-height:100vh;background:var(--bg)}
@@ -231,10 +229,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
   <h1 class="profiles-title">Who's watching?</h1>
   <div class="profiles-grid" id="profiles-grid"></div>
   <div class="profile-actions">
-    <div class="user-badge" id="user-badge" style="display:none">
-      <img id="user-pic" src="" alt="">
-      <span id="user-name"></span>
-    </div>
     <button class="outline-btn red" onclick="handleSignOut()">Sign Out</button>
   </div>
 </div>
@@ -383,6 +377,8 @@ function initGIS(){
       try{
         const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+accessToken}});
         userProfile=await r.json();
+        // Persist profile so we can skip sign-in screen on next visit
+        localStorage.setItem('yf_user', JSON.stringify(userProfile));
       }catch(e){ userProfile=null; }
       showProfileScreen();
     }
@@ -390,11 +386,13 @@ function initGIS(){
 }
 function handleSignIn(){
   if(!tokenClient){ showToast('⚠ Not ready, try again.'); return; }
-  tokenClient.requestAccessToken({prompt:'consent'});
+  // prompt:'' = silent if already consented; Google will only show picker if truly needed
+  tokenClient.requestAccessToken({prompt:''});
 }
 function handleSignOut(){
   if(accessToken) google.accounts.oauth2.revoke(accessToken);
   accessToken=null; userProfile=null;
+  localStorage.removeItem('yf_user');
   Object.keys(urlCache).forEach(k=>delete urlCache[k]);
   Object.keys(folderIdCache).forEach(k=>delete folderIdCache[k]);
   document.getElementById('dashboard').classList.remove('active');
@@ -583,11 +581,6 @@ async function showProfileScreen(){
   const ss=document.getElementById('signin-screen');
   ss.classList.remove('visible');
   setTimeout(()=>ss.style.display='none',400);
-  if(userProfile){
-    document.getElementById('user-badge').style.display='flex';
-    document.getElementById('user-pic').src=userProfile.picture||'';
-    document.getElementById('user-name').textContent=userProfile.name||userProfile.email||'';
-  }
   const ps=document.getElementById('profile-screen');
   ps.classList.remove('exit'); ps.style.display='flex';
   requestAnimationFrame(()=>ps.classList.add('visible'));
@@ -760,9 +753,39 @@ async function buildDashboard(year,idx){
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener('load',()=>{
   const waitGIS=setInterval(()=>{
-    if(window.google?.accounts?.oauth2){ clearInterval(waitGIS); initGIS(); }
+    if(!window.google?.accounts?.oauth2) return;
+    clearInterval(waitGIS);
+    initGIS();
+
+    // Restore saved profile
+    const savedUser=localStorage.getItem('yf_user');
+    if(savedUser){
+      try{ userProfile=JSON.parse(savedUser); }catch(e){ userProfile=null; }
+    }
+
+    setTimeout(()=>{
+      hideLoader();
+      if(userProfile){
+        // User signed in before — silently get a fresh token, skip sign-in screen
+        tokenClient.callback=async(resp)=>{
+          if(resp.error){
+            // Silent refresh failed — show sign-in screen
+            localStorage.removeItem('yf_user');
+            userProfile=null;
+            showSignIn();
+            return;
+          }
+          accessToken=resp.access_token;
+          tokenExpiry=Date.now()+(resp.expires_in-60)*1000;
+          showProfileScreen();
+        };
+        // prompt:'' = no UI shown if Google has a valid session
+        tokenClient.requestAccessToken({prompt:''});
+      } else {
+        showSignIn();
+      }
+    },2800);
   },100);
-  setTimeout(()=>{ hideLoader(); showSignIn(); },2800);
 });
 </script>
 </body>
